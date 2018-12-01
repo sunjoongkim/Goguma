@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,27 +12,34 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="30sp"
-        android:text="붕어빵"
+        android:text="사장님 메뉴"
         />
 
     <Button
-        android:id="@+id/btn_consumer"
+        android:id="@+id/btn_notify"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="200dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="20sp"
-        android:text="붕어빵 추적"/>
+        android:text="내 위치 등록"/>
 
     <Button
-        android:id="@+id/btn_producer"
+        android:id="@+id/btn_regist"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="300dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="20sp"
-        android:text="사장님 메뉴"/>
+        android:text="메뉴 등록"/>
 
-</LinearLayout>
+    <include
+        android:id="@+id/notify_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/producer_notify_view"
+        android:visibility="invisible"/>
+    
+</FrameLayout>

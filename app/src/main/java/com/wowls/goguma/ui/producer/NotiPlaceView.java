@@ -1,4 +1,4 @@
-package com.wowls.goguma.ui.consumer;
+package com.wowls.goguma.ui.producer;
 
 import android.Manifest;
 import android.content.Context;
@@ -10,12 +10,13 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,9 +26,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wowls.goguma.R;
 
-public class ConsumerActivity extends FragmentActivity
+public class NotiPlaceView
 {
-    private static final String TAG = "Goguma";
+    private Context mContext;
+    private FragmentActivity mFragmentActivity;
+    private View mMyView;
 
     private GoogleMap mGoogleMap;
     private LocationManager mLocationManager;
@@ -36,18 +39,31 @@ public class ConsumerActivity extends FragmentActivity
     private double mLatitude;
     private double mLongitude;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState)
+    private Button mBtnRegist;
+
+    public NotiPlaceView(Context context, FragmentActivity activity, View view)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.consumer_main);
+        mContext = context;
+        mFragmentActivity = activity;
+        mMyView = view;
 
-        mBoxMap = (RelativeLayout) findViewById(R.id.box_map);
-
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        checkGpsState();
-        requestPermission();
+        mBoxMap = (RelativeLayout) view.findViewById(R.id.box_map);
+        mBtnRegist = (Button) view.findViewById(R.id.btn_enter);
+        mBtnRegist.setOnClickListener(mOnClickListener);
+        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
+
+    public void setVisible(boolean visible)
+    {
+        mMyView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+
+        if(visible)
+        {
+            checkGpsState();
+            requestPermission();
+        }
+    }
+
 
     // GPS on/off 체크
     private void checkGpsState()
@@ -56,7 +72,7 @@ public class ConsumerActivity extends FragmentActivity
         {
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
-            startActivity(intent);
+            mContext.startActivity(intent);
         }
     }
 
@@ -67,7 +83,7 @@ public class ConsumerActivity extends FragmentActivity
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if(checkPermission())
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                ActivityCompat.requestPermissions(mFragmentActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             else
             {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, mLocationListener);
@@ -84,8 +100,8 @@ public class ConsumerActivity extends FragmentActivity
 
     private boolean checkPermission()
     {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if(ContextCompat.checkSelfPermission(mFragmentActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(mFragmentActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return true;
 
         return false;
@@ -104,10 +120,7 @@ public class ConsumerActivity extends FragmentActivity
             mLatitude = location.getLatitude();
             mLongitude = location.getLongitude();
 
-            Log.i(TAG, "===========> mLatitude : " + mLatitude);
-            Log.i(TAG, "===========> mLongitude : " + mLongitude);
-
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            SupportMapFragment mapFragment = (SupportMapFragment) mFragmentActivity.getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(mMapReadyCallback);
         }
 
@@ -136,6 +149,7 @@ public class ConsumerActivity extends FragmentActivity
         public void onMapReady(GoogleMap googleMap)
         {
             mGoogleMap = googleMap;
+            mGoogleMap.setOnMapClickListener(mOnMapClickListener);
             mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             LatLng position = new LatLng(mLatitude, mLongitude);
@@ -144,6 +158,38 @@ public class ConsumerActivity extends FragmentActivity
             MarkerOptions options = new MarkerOptions();
             options.position(position);
             mGoogleMap.addMarker(options);
+        }
+    };
+
+    private GoogleMap.OnMapClickListener mOnMapClickListener = new GoogleMap.OnMapClickListener()
+    {
+        @Override
+        public void onMapClick(LatLng latLng)
+        {
+            mLatitude = latLng.latitude;
+            mLongitude = latLng.longitude;
+
+            mGoogleMap.clear();
+
+            MarkerOptions options = new MarkerOptions();
+            options.position(latLng);
+            mGoogleMap.addMarker(options);
+        }
+    };
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            switch (v.getId())
+            {
+                case R.id.btn_enter:
+                    // 서버로 위치 전송코드 추가
+                    Toast.makeText(mContext, "위치 등록 완료", Toast.LENGTH_SHORT).show();
+                    setVisible(false);
+                    break;
+            }
         }
     };
 }
