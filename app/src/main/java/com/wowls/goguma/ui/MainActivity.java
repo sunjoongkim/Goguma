@@ -103,7 +103,7 @@ public class MainActivity extends Activity
 
     public final static int MSG_CHECK_SERVICE_STARTED = 1000;
 
-    private final static int DELAY_CHECK_SERVICE_STARTED = 500;
+    private final static int DELAY_CHECK_SERVICE_STARTED = 100;
 
     private WordChainHandler mWordChainHandler = new WordChainHandler();
 

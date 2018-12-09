@@ -35,8 +35,11 @@ public interface RetrofitService
     Call<ResponseBody> getRoomId(@Body Map<String, String> user);
 
     // Store Management
-    @POST(Define.URL_STORE_MANAGER + Define.URL_OWNER + "{path}" + "/")
+    @POST(Define.URL_STORE_MANAGER + Define.URL_OWNER + "{path}")
     Call<ResponseBody> createStore(@Path("path") String ownerId, @Body Map<String, String> user);
+
+    @GET(Define.URL_STORE_MANAGER + Define.URL_OWNER + "{path}")
+    Call<ResponseBody> getStore(@Path("path") String ownerId);
 
     // Store
     @GET(Define.URL_STORE + Define.URL_SEARCH)

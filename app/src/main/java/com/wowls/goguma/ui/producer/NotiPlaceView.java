@@ -217,10 +217,10 @@ public class NotiPlaceView
     {
         HashMap<String, String> map = new HashMap<>();
 
-        map.put("storeId", "sun");
+        map.put("storeId", "sun3");
         map.put("ownerId", mService.getCurrentUser());
         map.put("storeName", "sun");
-        map.put("storeDesc", "sun's store");
+        map.put("storeDesc", "sun's store2");
         map.put("storeLat", String.valueOf(mLatitude));
         map.put("storeLon", String.valueOf(mLongitude));
 

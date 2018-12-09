@@ -223,6 +223,12 @@ public class ConsumerActivity extends FragmentActivity
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)
                 {
+                    if(response.body() == null)
+                    {
+                        Log.i(LOG, "===============> getStore response is null");
+                        return;
+                    }
+
                     try {
                         String json = response.body().string();
                         Log.i(LOG, "===============> register : " + json);

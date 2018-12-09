@@ -84,6 +84,7 @@ public class ProducerActivity extends FragmentActivity
                     break;
 
                 case R.id.btn_regist:
+                    mRegistMenuView.setVisible(true);
                     break;
             }
         }
@@ -105,8 +106,8 @@ public class ProducerActivity extends FragmentActivity
 
     public final static int MSG_CLEAR_VIEW = 1000;
     public final static int MSG_ENTER_LOGIN_VIEW = MSG_CLEAR_VIEW + 1;
-    public final static int MSG_ENTER_MENU_VIEW = MSG_ENTER_LOGIN_VIEW + 1;
-    public final static int MSG_ENTER_NOTI_VIEW = MSG_ENTER_MENU_VIEW + 1;
+    public final static int MSG_ENTER_REGIST_MENU_VIEW = MSG_ENTER_LOGIN_VIEW + 1;
+    public final static int MSG_ENTER_NOTI_VIEW = MSG_ENTER_REGIST_MENU_VIEW + 1;
 
     private final static int DELAY_CHECK_SERVICE_STARTED = 500;
 
@@ -128,7 +129,7 @@ public class ProducerActivity extends FragmentActivity
                     mLoginView.setVisible(true);
                     break;
 
-                case MSG_ENTER_MENU_VIEW:
+                case MSG_ENTER_REGIST_MENU_VIEW:
                     clearView();
                     mRegistMenuView.setVisible(true);
                     break;
