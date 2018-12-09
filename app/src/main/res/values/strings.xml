@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Goguma</string>
+
+    // login
+    <string name="id">아이디</string>
+    <string name="password">비밀번호</string>
+    <string name="login">로그인</string>
+    <string name="register">회원가입</string>
 </resources>

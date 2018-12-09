@@ -26,6 +26,8 @@
 
         <activity android:name=".ui.consumer.ConsumerActivity"/>
         <activity android:name=".ui.producer.ProducerActivity"/>
+
+        <service android:name=".service.GogumaService"/>
     </application>
 
 </manifest>

@@ -15,7 +15,7 @@
         android:text="사장님 메뉴"
         />
 
-    <Button
+    <TextView
         android:id="@+id/btn_notify"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -23,9 +23,10 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="20sp"
-        android:text="내 위치 등록"/>
+        android:text="내 위치 등록"
+        android:background="#D0D0D0"/>
 
-    <Button
+    <TextView
         android:id="@+id/btn_regist"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -33,13 +34,28 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="20sp"
-        android:text="메뉴 등록"/>
+        android:text="메뉴 등록"
+        android:background="#D0D0D0"/>
+
+    <include
+        android:id="@+id/login_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/producer_login_view"
+        android:visibility="invisible"/>
 
     <include
         android:id="@+id/notify_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         layout="@layout/producer_notify_view"
+        android:visibility="invisible"/>
+
+    <include
+        android:id="@+id/regist_menu_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/producer_regist_menu_view"
         android:visibility="invisible"/>
     
 </FrameLayout>

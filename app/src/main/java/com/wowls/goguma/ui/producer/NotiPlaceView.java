@@ -1,7 +1,9 @@
 package com.wowls.goguma.ui.producer;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -13,10 +15,10 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,12 +27,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wowls.goguma.R;
+import com.wowls.goguma.retrofit.RetrofitService;
+import com.wowls.goguma.service.GogumaService;
+
+import java.util.HashMap;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class NotiPlaceView
 {
+    public final static String LOG = "Goguma";
+
     private Context mContext;
     private FragmentActivity mFragmentActivity;
     private View mMyView;
+    private GogumaService mService;
+    private RetrofitService mRetrofitService;
 
     private GoogleMap mGoogleMap;
     private LocationManager mLocationManager;
@@ -41,11 +55,12 @@ public class NotiPlaceView
 
     private Button mBtnRegist;
 
-    public NotiPlaceView(Context context, FragmentActivity activity, View view)
+    public NotiPlaceView(Context context, FragmentActivity activity, View view, RetrofitService service)
     {
         mContext = context;
         mFragmentActivity = activity;
         mMyView = view;
+        mRetrofitService = service;
 
         mBoxMap = (RelativeLayout) view.findViewById(R.id.box_map);
         mBtnRegist = (Button) view.findViewById(R.id.btn_enter);
@@ -62,6 +77,11 @@ public class NotiPlaceView
             checkGpsState();
             requestPermission();
         }
+    }
+
+    public void setService(GogumaService service)
+    {
+        mService = service;
     }
 
 
@@ -121,7 +141,8 @@ public class NotiPlaceView
             mLongitude = location.getLongitude();
 
             SupportMapFragment mapFragment = (SupportMapFragment) mFragmentActivity.getSupportFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(mMapReadyCallback);
+            if(mapFragment != null)
+                mapFragment.getMapAsync(mMapReadyCallback);
         }
 
         @Override
@@ -185,11 +206,68 @@ public class NotiPlaceView
             switch (v.getId())
             {
                 case R.id.btn_enter:
-                    // 서버로 위치 전송코드 추가
-                    Toast.makeText(mContext, "위치 등록 완료", Toast.LENGTH_SHORT).show();
-                    setVisible(false);
+                    // 서버로 위치 전송
+                    notifyMyPlace();
                     break;
             }
         }
     };
+
+    private void notifyMyPlace()
+    {
+        HashMap<String, String> map = new HashMap<>();
+
+        map.put("storeId", "sun");
+        map.put("ownerId", mService.getCurrentUser());
+        map.put("storeName", "sun");
+        map.put("storeDesc", "sun's store");
+        map.put("storeLat", String.valueOf(mLatitude));
+        map.put("storeLon", String.valueOf(mLongitude));
+
+        if(mRetrofitService != null)
+        {
+            mRetrofitService.createStore(mService.getCurrentUser(), map).enqueue(new Callback<ResponseBody>()
+            {
+                @Override
+                public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)
+                {
+                    Log.i(LOG, "register : " + response.body());
+
+                    if(response.body() == null)
+                        retryDialog("위치 등록 실패");
+                    else
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setMessage("위치 등록 성공 : " + mLatitude + ", " + mLongitude)
+                                .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        setVisible(false);
+                                    }
+                                })
+                                .create()
+                                .show();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+                    Log.i(LOG, "onFailure : " + t.toString());
+                }
+            });
+        }
+    }
+
+    private void retryDialog(String comment)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(comment)
+                .setNegativeButton("다시 시도", null)
+                .create()
+                .show();
+    }
 }
