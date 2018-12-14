@@ -6,29 +6,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.wowls.goguma.R;
 import com.wowls.goguma.retrofit.RetrofitService;
 import com.wowls.goguma.service.GogumaService;
+
+import net.daum.mf.map.api.MapPOIItem;
+import net.daum.mf.map.api.MapPoint;
+import net.daum.mf.map.api.MapView;
 
 import java.util.HashMap;
 
@@ -46,9 +41,8 @@ public class NotiPlaceView
     private GogumaService mService;
     private RetrofitService mRetrofitService;
 
-    private GoogleMap mGoogleMap;
+    private MapView mMapView;
     private LocationManager mLocationManager;
-    private RelativeLayout mBoxMap;
 
     private double mLatitude;
     private double mLongitude;
@@ -62,7 +56,11 @@ public class NotiPlaceView
         mMyView = view;
         mRetrofitService = service;
 
-        mBoxMap = (RelativeLayout) view.findViewById(R.id.box_map);
+        mMapView = new MapView(context);
+        mMapView.setMapViewEventListener(mMapViewEventListener);
+        ViewGroup mapViewContainer = (ViewGroup) view.findViewById(R.id.map_view);
+        mapViewContainer.addView(mMapView);
+
         mBtnRegist = (Button) view.findViewById(R.id.btn_enter);
         mBtnRegist.setOnClickListener(mOnClickListener);
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -104,18 +102,7 @@ public class NotiPlaceView
         {
             if(checkPermission())
                 ActivityCompat.requestPermissions(mFragmentActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            else
-            {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, mLocationListener);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 10, mLocationListener);
-            }
         }
-        else
-        {
-            if(!checkPermission())
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, mLocationListener);
-        }
-
     }
 
     private boolean checkPermission()
@@ -127,74 +114,107 @@ public class NotiPlaceView
         return false;
     }
 
-    private LocationListener mLocationListener = new LocationListener()
+    private MapView.MapViewEventListener mMapViewEventListener = new MapView.MapViewEventListener()
     {
         @Override
-        public void onLocationChanged(Location location)
+        public void onMapViewInitialized(MapView mapView)
         {
-            if(checkPermission())
-                return;
+            Log.i(LOG, "==================> onMapViewInitialized");
+            mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+            mMapView.setCurrentLocationEventListener(new MapView.CurrentLocationEventListener()
+            {
+                @Override
+                public void onCurrentLocationUpdate(MapView mapView, MapPoint mapPoint, float v)
+                {
+                    mMapView.setCurrentLocationTrackingMode(null);
 
-            mLocationManager.removeUpdates(mLocationListener);
+                }
 
-            mLatitude = location.getLatitude();
-            mLongitude = location.getLongitude();
+                @Override
+                public void onCurrentLocationDeviceHeadingUpdate(MapView mapView, float v)
+                {
 
-            SupportMapFragment mapFragment = (SupportMapFragment) mFragmentActivity.getSupportFragmentManager().findFragmentById(R.id.map);
-            if(mapFragment != null)
-                mapFragment.getMapAsync(mMapReadyCallback);
+                }
+
+                @Override
+                public void onCurrentLocationUpdateFailed(MapView mapView)
+                {
+
+                }
+
+                @Override
+                public void onCurrentLocationUpdateCancelled(MapView mapView)
+                {
+
+                }
+            });
+
+            if(mService != null)
+            {
+                MapPOIItem item = new MapPOIItem();
+                item.setItemName(mService.getCurrentUser());
+                item.setMapPoint(mMapView.getMapCenterPoint());
+                mMapView.addPOIItem(item);
+            }
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
+        public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint)
         {
 
         }
 
         @Override
-        public void onProviderEnabled(String provider)
+        public void onMapViewZoomLevelChanged(MapView mapView, int i)
         {
 
         }
 
         @Override
-        public void onProviderDisabled(String provider)
+        public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint)
+        {
+            Log.i(LOG, "==================> onMapViewSingleTapped");
+            mLatitude = mapPoint.getMapPointGeoCoord().latitude;
+            mLongitude = mapPoint.getMapPointGeoCoord().longitude;
+
+            if(mService != null)
+            {
+                mMapView.removeAllPOIItems();
+                MapPOIItem item = new MapPOIItem();
+                item.setItemName(mService.getCurrentUser());
+                item.setMapPoint(mapPoint);
+                mMapView.addPOIItem(item);
+            }
+        }
+
+        @Override
+        public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint)
         {
 
         }
-    };
 
-    private OnMapReadyCallback mMapReadyCallback = new OnMapReadyCallback()
-    {
         @Override
-        public void onMapReady(GoogleMap googleMap)
+        public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint)
         {
-            mGoogleMap = googleMap;
-            mGoogleMap.setOnMapClickListener(mOnMapClickListener);
-            mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            LatLng position = new LatLng(mLatitude, mLongitude);
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
-
-            MarkerOptions options = new MarkerOptions();
-            options.position(position);
-            mGoogleMap.addMarker(options);
         }
-    };
 
-    private GoogleMap.OnMapClickListener mOnMapClickListener = new GoogleMap.OnMapClickListener()
-    {
         @Override
-        public void onMapClick(LatLng latLng)
+        public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint)
         {
-            mLatitude = latLng.latitude;
-            mLongitude = latLng.longitude;
 
-            mGoogleMap.clear();
+        }
 
-            MarkerOptions options = new MarkerOptions();
-            options.position(latLng);
-            mGoogleMap.addMarker(options);
+        @Override
+        public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint)
+        {
+
         }
     };
 
@@ -217,10 +237,10 @@ public class NotiPlaceView
     {
         HashMap<String, String> map = new HashMap<>();
 
-        map.put("storeId", "sun3");
+        map.put("storeId", mService.getCurrentUser());
         map.put("ownerId", mService.getCurrentUser());
-        map.put("storeName", "sun");
-        map.put("storeDesc", "sun's store2");
+        map.put("storeName", mService.getCurrentUser());
+        map.put("storeDesc", mService.getCurrentUser() + " store");
         map.put("storeLat", String.valueOf(mLatitude));
         map.put("storeLon", String.valueOf(mLongitude));
 

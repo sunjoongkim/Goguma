@@ -4,7 +4,7 @@ package com.wowls.goguma.define;
 public class Define
 {
     // URL
-    public static final String URL_BASE = "http://172.30.1.43:8080/";
+    public static final String URL_BASE = "http://211.39.150.247:7701/";
 //    public static final String URL_BASE = "https://webapp-wowls-wordchain-dev.azurewebsites.net/";
     public static final String URL_USER = "users/";
     public static final String URL_ROOM = "rooms/";

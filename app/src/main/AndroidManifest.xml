@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wowls.goguma">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -15,6 +16,7 @@
         android:theme="@style/AppTheme">
 
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBxeScsEMyVjP3p6dF9gHZKYr6cZV_Ss_M"/>
+        <meta-data android:name="com.kakao.sdk.AppKey" android:value="198f51f0a80dfc72430dba647043121a"/>
 
         <activity android:name=".ui.MainActivity">
             <intent-filter>

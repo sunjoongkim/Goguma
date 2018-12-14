@@ -5,15 +5,9 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/box_map"
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <fragment
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
     </RelativeLayout>
 

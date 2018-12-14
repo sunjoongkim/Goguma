@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,14 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.RelativeLayout;
+import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -31,6 +23,10 @@ import com.wowls.goguma.R;
 import com.wowls.goguma.define.Define;
 import com.wowls.goguma.retrofit.RetrofitService;
 import com.wowls.goguma.store_info.StoreInfo;
+
+import net.daum.mf.map.api.MapPOIItem;
+import net.daum.mf.map.api.MapPoint;
+import net.daum.mf.map.api.MapView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,9 +41,8 @@ public class ConsumerActivity extends FragmentActivity
 {
     private static final String LOG = "Goguma";
 
-    private GoogleMap mGoogleMap;
     private LocationManager mLocationManager;
-    private RelativeLayout mBoxMap;
+    private MapView mMapView;
 
     private RetrofitService mRetrofitService;
 
@@ -64,7 +59,10 @@ public class ConsumerActivity extends FragmentActivity
 
         initRetrofit();
 
-        mBoxMap = (RelativeLayout) findViewById(R.id.box_map);
+        mMapView = new MapView(this);
+        mMapView.setMapViewEventListener(mMapViewEventListener);
+        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+        mapViewContainer.addView(mMapView);
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkGpsState();
@@ -75,8 +73,6 @@ public class ConsumerActivity extends FragmentActivity
     protected void onStart()
     {
         super.onStart();
-
-        getStores();
     }
 
     private void initRetrofit()
@@ -108,18 +104,7 @@ public class ConsumerActivity extends FragmentActivity
         {
             if(checkPermission())
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            else
-            {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, mLocationListener);
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 10, mLocationListener);
-            }
         }
-        else
-        {
-            if(!checkPermission())
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, mLocationListener);
-        }
-
     }
 
     private boolean checkPermission()
@@ -131,62 +116,62 @@ public class ConsumerActivity extends FragmentActivity
         return false;
     }
 
-    private LocationListener mLocationListener = new LocationListener()
+    private MapView.MapViewEventListener mMapViewEventListener = new MapView.MapViewEventListener()
     {
         @Override
-        public void onLocationChanged(Location location)
+        public void onMapViewInitialized(MapView mapView)
         {
-            if(checkPermission())
-                return;
+            mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
 
-            mLocationManager.removeUpdates(mLocationListener);
-
-            mLatitude = location.getLatitude();
-            mLongitude = location.getLongitude();
-
-            Log.i(LOG, "===========> mLatitude : " + mLatitude);
-            Log.i(LOG, "===========> mLongitude : " + mLongitude);
-
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            if(mapFragment != null)
-                mapFragment.getMapAsync(mMapReadyCallback);
+            getStores();
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
+        public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint)
         {
 
         }
 
         @Override
-        public void onProviderEnabled(String provider)
+        public void onMapViewZoomLevelChanged(MapView mapView, int i)
         {
 
         }
 
         @Override
-        public void onProviderDisabled(String provider)
+        public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint)
         {
 
         }
-    };
 
-    private OnMapReadyCallback mMapReadyCallback = new OnMapReadyCallback()
-    {
         @Override
-        public void onMapReady(GoogleMap googleMap)
+        public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint)
         {
-            mGoogleMap = googleMap;
-            mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            LatLng position = new LatLng(mLatitude, mLongitude);
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+        }
 
-            MarkerOptions options = new MarkerOptions();
-            options.position(position);
-            mGoogleMap.addMarker(options);
+        @Override
+        public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint)
+        {
 
-            addStoreMarker();
+        }
+
+        @Override
+        public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint)
+        {
+
         }
     };
 
@@ -206,11 +191,11 @@ public class ConsumerActivity extends FragmentActivity
             double longitude = Double.parseDouble(lon);
             double latitude = Double.parseDouble(lat);
 
-            LatLng position = new LatLng(latitude, longitude);
-
-            MarkerOptions options = new MarkerOptions();
-            options.position(position);
-            mGoogleMap.addMarker(options);
+            MapPOIItem item = new MapPOIItem();
+            MapPoint point = MapPoint.mapPointWithGeoCoord(latitude, longitude);
+            item.setItemName(info.getStoreName());
+            item.setMapPoint(point);
+            mMapView.addPOIItem(item);
         }
     }
 
@@ -238,6 +223,7 @@ public class ConsumerActivity extends FragmentActivity
                         else
                         {
                             storeParser(json);
+                            addStoreMarker();
                         }
                     }
                     catch (IOException e) {
