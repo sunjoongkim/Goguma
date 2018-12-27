@@ -22,7 +22,7 @@ import com.google.gson.JsonParser;
 import com.wowls.goguma.R;
 import com.wowls.goguma.define.Define;
 import com.wowls.goguma.retrofit.RetrofitService;
-import com.wowls.goguma.store_info.StoreInfo;
+import com.wowls.goguma.data.StoreInfo;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -203,7 +203,7 @@ public class ConsumerActivity extends FragmentActivity
     {
         if(mRetrofitService != null)
         {
-            mRetrofitService.getStores().enqueue(new Callback<ResponseBody>()
+            mRetrofitService.showStoreList().enqueue(new Callback<ResponseBody>()
             {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)
@@ -216,7 +216,7 @@ public class ConsumerActivity extends FragmentActivity
 
                     try {
                         String json = response.body().string();
-                        Log.i(LOG, "===============> register : " + json);
+                        Log.i(LOG, "===============> getStores : " + json);
 
                         if(response.body() == null)
                             retryDialog("점포 가져오기 실패");

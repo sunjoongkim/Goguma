@@ -2,26 +2,60 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#363636">
+
+    <TextView
+        android:id="@+id/text_store_id"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="20"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_view"
+        android:id="@+id/menu_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="70"
         >
 
     </android.support.v7.widget.RecyclerView>
 
-    <Button
-        android:id="@+id/btn_enter"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="right|bottom"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:text="등록"
-        />
-    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/btn_edit"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="140dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="right|bottom"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="삭제"
+            />
+
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="right|bottom"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="추가"
+            />
+
+    </FrameLayout>
+
 </LinearLayout>

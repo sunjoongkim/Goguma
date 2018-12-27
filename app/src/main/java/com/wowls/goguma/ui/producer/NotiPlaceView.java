@@ -246,7 +246,7 @@ public class NotiPlaceView
 
         if(mRetrofitService != null)
         {
-            mRetrofitService.createStore(mService.getCurrentUser(), map).enqueue(new Callback<ResponseBody>()
+            mRetrofitService.saveStoreInfo(mService.getCurrentUser(), map).enqueue(new Callback<ResponseBody>()
             {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)

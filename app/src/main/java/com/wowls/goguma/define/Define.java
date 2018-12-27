@@ -20,12 +20,22 @@ public class Define
     public static final String WS_BASE = "ws://webapp-wowls-wordchain-dev.azurewebsites.net/ws/websocket";
 
     // key
-    public static final String KEY_STORE_NAME = "STORE_NAME";
-    public static final String KEY_STORE_LAT = "STORE_LAT";
-    public static final String KEY_STORE_LON = "STORE_LON";
-    public static final String KEY_STORE_DESC = "STORE_DESC";
-    public static final String KEY_STORE_ID = "STORE_ID";
-    public static final String KEY_OWNER_ID = "OWNER_ID";
+    public static final String KEY_STORE_NAME = "store_name";
+    public static final String KEY_STORE_LAT = "store_lat";
+    public static final String KEY_STORE_LON = "store_lon";
+    public static final String KEY_STORE_DESC = "store_desc";
+    public static final String KEY_STORE_ID = "store_id";
+    public static final String KEY_OWNER_ID = "owner_id";
+
+    public static final String KEY_USER_ID = "user_id";
+    public static final String KEY_USER_PW = "user_pw";
+    public static final String KEY_USER_TYPE = "user_type";
+    public static final String KEY_USER_NAME = "user_name";
+    public static final String KEY_USER_ENABLED = "enabled";
+
+    public static final String KEY_MENU_STORE_ID = "storeId";
+    public static final String KEY_MENU_NAME = "menuName";
+    public static final String KEY_MENU_PRICE = "menuPrice";
 
     // msg
     public static final String MSG_MATCH = "match";

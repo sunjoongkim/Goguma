@@ -10,6 +10,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.wowls.goguma.R;
 import com.wowls.goguma.define.ConnectionState;
 import com.wowls.goguma.define.Define;
@@ -125,9 +127,12 @@ public class LoginView
 
                         parseUserColumn(userColumn);
 
+                        Log.i(LOG, "===============> mUserPw : " + mUserPw);
+                        Log.i(LOG, "===============> userPW : " + userPW);
+
                         if(mUserPw.equals(userPW))
                         {
-                            mHandler.sendEmptyMessage(ProducerActivity.MSG_CLEAR_VIEW);
+                            mHandler.sendEmptyMessage(ProducerActivity.MSG_SUCCESS_LOGIN);
 
                             InputMethodManager keyboard = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                             keyboard.hideSoftInputFromWindow(mEditId.getWindowToken(), 0);
@@ -167,10 +172,10 @@ public class LoginView
         {
             HashMap<String, String> map = new HashMap<>();
 
-            map.put("userType", Define.TYPE_PRODUCER);
             map.put("userId", userID);
-            map.put("userName", userID);
             map.put("userPw", userPW);
+            map.put("userName", userID);
+            map.put("userType", Define.TYPE_PRODUCER);
 
             if(mRetrofitService != null)
             {
@@ -241,28 +246,21 @@ public class LoginView
         return true;
     }
 
-    private void parseUserColumn(String user)
+    private void parseUserColumn(String json)
     {
-        int index = user.indexOf(":");
-        String temp = user.substring(index + 2);
-        mUserType = temp.substring(0, temp.indexOf("\""));
+        JsonParser parser = new JsonParser();
+        JsonObject object = (JsonObject) parser.parse(json);
 
-        index = temp.indexOf(":");
-        temp = temp.substring(index + 2);
-        mUserId = temp.substring(0, temp.indexOf("\""));
-
-        index = temp.indexOf(":");
-        temp = temp.substring(index + 2);
-        mUserName = temp.substring(0, temp.indexOf("\""));
-
-        index = temp.indexOf(":");
-        temp = temp.substring(index + 2);
-        mUserPw = temp.substring(0, temp.indexOf("\""));
+        mUserType = object.getAsJsonObject().get(Define.KEY_USER_TYPE).toString().replace("\"", "");
+        mUserId = object.getAsJsonObject().get(Define.KEY_USER_ID).toString().replace("\"", "");
+        mUserName = object.getAsJsonObject().get(Define.KEY_USER_NAME).toString().replace("\"", "");
+        mUserPw = object.getAsJsonObject().get(Define.KEY_USER_PW).toString().replace("\"", "");
 
         Log.i(LOG, "===============> mUserType : " + mUserType);
         Log.i(LOG, "===============> mUserId : " + mUserId);
         Log.i(LOG, "===============> mUserName : " + mUserName);
         Log.i(LOG, "===============> mUserPw : " + mUserPw);
+
     }
 
     private void retryDialog(String comment)

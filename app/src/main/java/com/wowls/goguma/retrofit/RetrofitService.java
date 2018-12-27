@@ -19,8 +19,8 @@ public interface RetrofitService
     @POST(Define.URL_USER)
     Call<ResponseBody> createUser(@Body Map<String, String> user);
 
-    @GET(Define.URL_USER + "{path}")
-    Call<ResponseBody> getUser(@Path("path") String userId);
+    @GET(Define.URL_USER + "{userId}")
+    Call<ResponseBody> getUser(@Path("userId") String userId);
 
     @GET(Define.URL_USER)
     Call<ResponseBody> getProfile();
@@ -36,12 +36,18 @@ public interface RetrofitService
 
     // Store Management
     @POST(Define.URL_STORE_MANAGER + Define.URL_OWNER + "{path}")
-    Call<ResponseBody> createStore(@Path("path") String ownerId, @Body Map<String, String> user);
+    Call<ResponseBody> saveStoreInfo(@Path("path") String ownerId, @Body Map<String, String> user);
 
     @GET(Define.URL_STORE_MANAGER + Define.URL_OWNER + "{path}")
-    Call<ResponseBody> getStore(@Path("path") String ownerId);
+    Call<ResponseBody> showOwnStoreList(@Path("path") String ownerId);
+
+    @GET(Define.URL_STORE_MANAGER + Define.URL_STORE + "{path}")
+    Call<ResponseBody> showOwnMenuList(@Path("path") String storeId);
+
+    @POST(Define.URL_STORE_MANAGER + Define.URL_STORE + "{path}")
+    Call<ResponseBody> saveMenuInfo(@Path("path") String storeId, @Body Map<String, String> menu);
 
     // Store
     @GET(Define.URL_STORE + Define.URL_SEARCH)
-    Call<ResponseBody> getStores();
+    Call<ResponseBody> showStoreList();
 }

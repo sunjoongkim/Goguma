@@ -1,4 +1,4 @@
-package com.wowls.goguma.store_info;
+package com.wowls.goguma.data;
 
 public class StoreInfo
 {

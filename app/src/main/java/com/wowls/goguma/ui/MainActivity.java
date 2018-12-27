@@ -34,9 +34,20 @@ public class MainActivity extends Activity
     @Override
     protected void onStart()
     {
+        Log.i(LOG, "===========> onStart : " + mService);
         super.onStart();
 
         checkServiceStarted();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        Log.i(LOG, "===========> onStop : " + mService);
+        super.onStop();
+
+        if(mService != null)
+            mService.setUiListener(null);
     }
 
     private void checkServiceStarted()
