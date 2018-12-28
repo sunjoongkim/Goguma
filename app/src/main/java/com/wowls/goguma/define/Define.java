@@ -4,16 +4,17 @@ package com.wowls.goguma.define;
 public class Define
 {
     // URL
-    public static final String URL_BASE = "http://211.39.150.247:7701/";
+    public static final String URL_BASE = "http://211.39.150.247:7701";
 //    public static final String URL_BASE = "https://webapp-wowls-wordchain-dev.azurewebsites.net/";
-    public static final String URL_USER = "users/";
-    public static final String URL_ROOM = "rooms/";
+    public static final String URL_USER = "/users";
+    public static final String URL_ROOM = "/rooms";
 
-    public static final String URL_STORE_MANAGER = "store-management/";
-    public static final String URL_STORE = "stores/";
-    public static final String URL_OWNER = "owners/";
+    public static final String URL_STORE_MANAGER = "/store-management";
+    public static final String URL_STORE = "/stores";
+    public static final String URL_OWNER = "/owners";
 
-    public static final String URL_SEARCH = "search/";
+    public static final String URL_SEARCH = "/search";
+    public static final String URL_KEYWORDS = "keywords";
 
     // Web socket
 //    public static final String WS_BASE = "ws://172.30.1.58:7701/ws/websocket";

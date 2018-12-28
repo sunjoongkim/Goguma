@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,15 +15,19 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.wowls.goguma.R;
+import com.wowls.goguma.data.StoreInfo;
 import com.wowls.goguma.define.Define;
 import com.wowls.goguma.retrofit.RetrofitService;
-import com.wowls.goguma.data.StoreInfo;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -41,15 +46,24 @@ public class ConsumerActivity extends FragmentActivity
 {
     private static final String LOG = "Goguma";
 
+    private static final double MAX_DISTANCE = 1000000;
+
     private LocationManager mLocationManager;
     private MapView mMapView;
+
+    private EditText mEditKeyword;
+    private ImageView mBtnSearch;
 
     private RetrofitService mRetrofitService;
 
     private ArrayList<StoreInfo> mStoreInfo = new ArrayList<>();
 
-    private double mLatitude;
-    private double mLongitude;
+    private double mDistanceLatitude = MAX_DISTANCE;
+    private double mDistanceLongitude = MAX_DISTANCE;
+    private double mNearestLatitude;
+    private double mNearestLongitude;
+
+    private Location mCurrentLocation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -60,9 +74,14 @@ public class ConsumerActivity extends FragmentActivity
         initRetrofit();
 
         mMapView = new MapView(this);
-        mMapView.setMapViewEventListener(mMapViewEventListener);
+//        mMapView.setMapViewEventListener(mMapViewEventListener);
+
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
         mapViewContainer.addView(mMapView);
+
+        mEditKeyword = (EditText) findViewById(R.id.edit_keyword);
+        mBtnSearch = (ImageView) findViewById(R.id.btn_search);
+        mBtnSearch.setOnClickListener(mOnClickListener);
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkGpsState();
@@ -73,6 +92,8 @@ public class ConsumerActivity extends FragmentActivity
     protected void onStart()
     {
         super.onStart();
+
+        initMapView();
     }
 
     private void initRetrofit()
@@ -104,7 +125,11 @@ public class ConsumerActivity extends FragmentActivity
         {
             if(checkPermission())
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            else
+                mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
+        else
+            mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     private boolean checkPermission()
@@ -116,72 +141,20 @@ public class ConsumerActivity extends FragmentActivity
         return false;
     }
 
-    private MapView.MapViewEventListener mMapViewEventListener = new MapView.MapViewEventListener()
+    private void initMapView()
     {
-        @Override
-        public void onMapViewInitialized(MapView mapView)
-        {
-            mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+        MapPoint point = MapPoint.mapPointWithGeoCoord(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        mMapView.setMapCenterPoint(point, true);
 
-            getStores();
-        }
-
-        @Override
-        public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-
-        @Override
-        public void onMapViewZoomLevelChanged(MapView mapView, int i)
-        {
-
-        }
-
-        @Override
-        public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-
-        @Override
-        public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-
-        @Override
-        public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-
-        @Override
-        public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-
-        @Override
-        public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-
-        @Override
-        public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint)
-        {
-
-        }
-    };
+        getStores(null);
+    }
 
     private void addStoreMarker()
     {
-        if(mStoreInfo.isEmpty())
-            return;
-
         String lon;
         String lat;
+
+        mMapView.removeAllPOIItems();
 
         for (StoreInfo info : mStoreInfo)
         {
@@ -196,14 +169,26 @@ public class ConsumerActivity extends FragmentActivity
             item.setItemName(info.getStoreName());
             item.setMapPoint(point);
             mMapView.addPOIItem(item);
+
+            setNearestStore(latitude, longitude);
         }
     }
 
-    private void getStores()
+    private void getStores(final String[] keywords)
     {
+        mDistanceLatitude = MAX_DISTANCE;
+        mDistanceLongitude = MAX_DISTANCE;
+
+        Call<ResponseBody> callStoreList;
+
         if(mRetrofitService != null)
         {
-            mRetrofitService.showStoreList().enqueue(new Callback<ResponseBody>()
+            if(keywords == null || keywords.length == 0)
+                callStoreList = mRetrofitService.showStoreList();
+            else
+                callStoreList = mRetrofitService.showStoreList(keywords);
+
+            callStoreList.enqueue(new Callback<ResponseBody>()
             {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)
@@ -224,6 +209,16 @@ public class ConsumerActivity extends FragmentActivity
                         {
                             storeParser(json);
                             addStoreMarker();
+                            initEditText();
+
+                            if(keywords != null && keywords.length != 0)
+                            {
+                                if(mStoreInfo.isEmpty())
+                                    retryDialog("검색된 점포가 없습니다.");
+                                else
+                                    mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(mNearestLatitude, mNearestLongitude), 2, true);
+                            }
+
                         }
                     }
                     catch (IOException e) {
@@ -281,5 +276,58 @@ public class ConsumerActivity extends FragmentActivity
             mStoreInfo.add(info);
         }
 
+    }
+
+    private void initEditText()
+    {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mEditKeyword.getWindowToken(), 0);
+
+        mEditKeyword.setText("");
+    }
+
+    private void setNearestStore(double latitude, double longitude)
+    {
+        double distanceLatitude = Math.abs(mCurrentLocation.getLatitude() - latitude);
+        double distanceLongitude = Math.abs(mCurrentLocation.getLongitude() - longitude);
+
+        Log.i(LOG, "================> distanceLatitude : " + distanceLatitude);
+        Log.i(LOG, "================> distanceLongitude : " + distanceLongitude);
+
+        if(mDistanceLatitude > distanceLatitude && mDistanceLatitude > distanceLongitude)
+        {
+            mDistanceLatitude = distanceLatitude;
+            mDistanceLongitude = distanceLongitude;
+
+            mNearestLatitude = latitude;
+            mNearestLongitude = longitude;
+        }
+    }
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            switch (v.getId())
+            {
+                case R.id.btn_search:
+                    getStores(keywordParser(mEditKeyword.getText().toString()));
+                    break;
+            }
+        }
+    };
+
+    private String[] keywordParser(String keywords)
+    {
+        if(keywords.contains(" "))
+            return keywords.split(" ");
+        else
+        {
+            String[] string = new String[1];
+            string[0] = keywords;
+
+            return string;
+        }
     }
 }
