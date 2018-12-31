@@ -12,6 +12,7 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="30sp"
+        android:textColor="#000000"
         android:text="사장님 메뉴"
         />
 
@@ -24,7 +25,7 @@
         android:gravity="center"
         android:textSize="20sp"
         android:text="내 위치 등록"
-        android:background="#D0D0D0"/>
+        android:background="#000000"/>
 
     <TextView
         android:id="@+id/btn_regist"
@@ -35,7 +36,7 @@
         android:gravity="center"
         android:textSize="20sp"
         android:text="메뉴 등록"
-        android:background="#D0D0D0"/>
+        android:background="#000000"/>
 
     <include
         android:id="@+id/login_view"

@@ -1,38 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
-    <TextView
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="70dp"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:text="붕어빵"
-        />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp"/>
 
-    <Button
-        android:id="@+id/btn_consumer"
-        android:layout_width="200dp"
+    <android.support.design.widget.TabLayout
         android:layout_height="50dp"
-        android:layout_marginTop="70dp"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:text="붕어빵 추적"/>
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:id="@+id/tab_layout" />
 
-    <Button
-        android:id="@+id/btn_producer"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:text="사장님 메뉴"/>
-
-</LinearLayout>
+</FrameLayout>

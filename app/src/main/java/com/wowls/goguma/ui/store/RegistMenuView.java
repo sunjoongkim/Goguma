@@ -1,4 +1,4 @@
-package com.wowls.goguma.ui.producer;
+package com.wowls.goguma.ui.store;
 
 import android.app.AlertDialog;
 import android.content.Context;

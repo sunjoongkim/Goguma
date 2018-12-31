@@ -13,12 +13,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppCompat.NoActionBar">
 
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBxeScsEMyVjP3p6dF9gHZKYr6cZV_Ss_M"/>
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="198f51f0a80dfc72430dba647043121a"/>
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,10 +26,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.consumer.ConsumerActivity"/>
-        <activity android:name=".ui.producer.ProducerActivity"/>
+        <activity android:name=".ui.MainActivity"/>
 
         <service android:name=".service.GogumaService"/>
+
     </application>
 
 </manifest>

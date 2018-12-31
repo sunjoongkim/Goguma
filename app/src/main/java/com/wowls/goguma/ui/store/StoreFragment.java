@@ -1,13 +1,17 @@
-package com.wowls.goguma.ui.producer;
+package com.wowls.goguma.ui.store;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
@@ -28,9 +32,11 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ProducerActivity extends FragmentActivity
+public class StoreFragment extends Fragment
 {
     private static final String LOG = "Goguma";
+
+    private Context mContext;
 
     private LoginView mLoginView;
     private NotiPlaceView mNotiPlaceView;
@@ -41,29 +47,34 @@ public class ProducerActivity extends FragmentActivity
     private GogumaService mService;
     private RetrofitService mRetrofitService;
 
+
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.producer_main);
+        Log.i(LOG, "==========================> StoreFragment onCreateView");
+        View view = inflater.inflate(R.layout.producer_main, container, false);
 
         initRetrofit();
+        mContext = getContext();
         mService = GogumaService.getService();
 
-        mLoginView = new LoginView(this, findViewById(R.id.login_view), mProducerHandler, mRetrofitService);
-        mNotiPlaceView = new NotiPlaceView(this, this, findViewById(R.id.notify_view), mRetrofitService);
-        mRegistMenuView = new RegistMenuView(this, findViewById(R.id.regist_menu_view), mRetrofitService);
+        mLoginView = new LoginView(mContext, view.findViewById(R.id.login_view), mProducerHandler, mRetrofitService);
+        mNotiPlaceView = new NotiPlaceView(mContext, getActivity(), view.findViewById(R.id.notify_view), mRetrofitService);
+        mRegistMenuView = new RegistMenuView(mContext, view.findViewById(R.id.regist_menu_view), mRetrofitService);
 
-        mBtnNoti = (TextView) findViewById(R.id.btn_notify);
+        mBtnNoti = (TextView) view.findViewById(R.id.btn_notify);
         mBtnNoti.setOnClickListener(mOnClickListener);
-        mBtnRegist = (TextView) findViewById(R.id.btn_regist);
+        mBtnRegist = (TextView) view.findViewById(R.id.btn_regist);
         mBtnRegist.setOnClickListener(mOnClickListener);
+
+        return view;
     }
 
     @Override
-    protected void onStart()
+    public void onResume()
     {
-        super.onStart();
+        super.onResume();
 
         setServiceToView();
         checkLogin();
@@ -96,20 +107,19 @@ public class ProducerActivity extends FragmentActivity
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)
                 {
-                    Log.i(LOG, "showOwnMenuList : " + response.body());
-
                     ResponseBody body = response.body();
-
-                    if(body == null)
-                    {
-                        retryDialog("메뉴 목록 가져오기 실패");
-                        return;
-                    }
 
                     try
                     {
+                        if(body == null)
+                        {
+                            retryDialog("메뉴 목록 가져오기 실패");
+                            return;
+                        }
+
                         menuParser(body.string());
-                    } catch (IOException e) {}
+                    }
+                    catch (IOException e) {}
                 }
 
                 @Override
@@ -123,6 +133,8 @@ public class ProducerActivity extends FragmentActivity
 
     private void menuParser(String json)
     {
+        Log.i(LOG, "=============> showOwnMenuList : " + json);
+
         ArrayList<MenuInfo> menuList = new ArrayList<>();
 
         String storeId;
@@ -134,9 +146,9 @@ public class ProducerActivity extends FragmentActivity
 
         for(JsonElement element : array)
         {
-            storeId = element.getAsJsonObject().get("STORE_ID").toString().replace("\"", "");
-            menuName = element.getAsJsonObject().get("MENU_NAME").toString().replace("\"", "");
-            menuPrice = element.getAsJsonObject().get("MENU_PRICE").toString();
+            storeId = element.getAsJsonObject().get("store_id").toString().replace("\"", "");
+            menuName = element.getAsJsonObject().get("menu_name").toString().replace("\"", "");
+            menuPrice = element.getAsJsonObject().get("menu_price").toString();
 
             Log.i(LOG, "=========> storeId : " + storeId);
             Log.i(LOG, "=========> menuName : " + menuName);
@@ -152,7 +164,7 @@ public class ProducerActivity extends FragmentActivity
 
     private void retryDialog(String comment)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ProducerActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage(comment)
                 .setNegativeButton("다시 시도", null)
                 .create()

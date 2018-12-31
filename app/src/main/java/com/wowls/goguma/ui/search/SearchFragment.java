@@ -1,20 +1,23 @@
-package com.wowls.goguma.ui.consumer;
+package com.wowls.goguma.ui.search;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -42,12 +45,13 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ConsumerActivity extends FragmentActivity
+public class SearchFragment extends Fragment
 {
     private static final String LOG = "Goguma";
 
     private static final double MAX_DISTANCE = 1000000;
 
+    private Context mContext;
     private LocationManager mLocationManager;
     private MapView mMapView;
 
@@ -63,37 +67,42 @@ public class ConsumerActivity extends FragmentActivity
     private double mNearestLatitude;
     private double mNearestLongitude;
 
-    private Location mCurrentLocation;
+    private MapPoint mCurrentMapCenter;
 
+
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.consumer_main);
+        View view = inflater.inflate(R.layout.consumer_main, container, false);
+        Log.i(LOG, "==========================> SearchFragment onCreateView");
 
         initRetrofit();
+        mContext = getContext();
 
-        mMapView = new MapView(this);
-//        mMapView.setMapViewEventListener(mMapViewEventListener);
+        mMapView = new MapView(mContext);
+        mMapView.setMapViewEventListener(mMapViewEventListener);
 
-        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+        ViewGroup mapViewContainer = (ViewGroup) view.findViewById(R.id.map_view);
         mapViewContainer.addView(mMapView);
 
-        mEditKeyword = (EditText) findViewById(R.id.edit_keyword);
-        mBtnSearch = (ImageView) findViewById(R.id.btn_search);
+        mEditKeyword = (EditText) view.findViewById(R.id.edit_keyword);
+        mBtnSearch = (ImageView) view.findViewById(R.id.btn_search);
         mBtnSearch.setOnClickListener(mOnClickListener);
 
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         checkGpsState();
         requestPermission();
+
+        return view;
     }
 
     @Override
-    protected void onStart()
+    public void onResume()
     {
-        super.onStart();
+        super.onResume();
 
-        initMapView();
+//        initMapView();
     }
 
     private void initRetrofit()
@@ -124,30 +133,85 @@ public class ConsumerActivity extends FragmentActivity
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if(checkPermission())
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            else
-                mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-        else
-            mCurrentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     private boolean checkPermission()
     {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return true;
 
         return false;
     }
 
-    private void initMapView()
-    {
-        MapPoint point = MapPoint.mapPointWithGeoCoord(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        mMapView.setMapCenterPoint(point, true);
 
-        getStores(null);
-    }
+    private MapView.MapViewEventListener mMapViewEventListener = new MapView.MapViewEventListener()
+    {
+        @Override
+        public void onMapViewInitialized(MapView mapView)
+        {
+            mapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+            mCurrentMapCenter = mapView.getMapCenterPoint();
+
+            getStores(null);
+
+            Message msg = new Message();
+            msg.what = MSG_SET_TRACKING_MODE;
+            msg.obj = mapView;
+
+            mSearchHandler.sendMessageDelayed(msg, DELAY_SET_TRACKING_MODE);
+        }
+
+        @Override
+        public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewZoomLevelChanged(MapView mapView, int i)
+        {
+
+        }
+
+        @Override
+        public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+
+        @Override
+        public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint)
+        {
+
+        }
+    };
 
     private void addStoreMarker()
     {
@@ -237,7 +301,7 @@ public class ConsumerActivity extends FragmentActivity
 
     private void retryDialog(String comment)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage(comment)
                 .setNegativeButton("다시 시도", null)
                 .create()
@@ -280,7 +344,7 @@ public class ConsumerActivity extends FragmentActivity
 
     private void initEditText()
     {
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEditKeyword.getWindowToken(), 0);
 
         mEditKeyword.setText("");
@@ -288,8 +352,8 @@ public class ConsumerActivity extends FragmentActivity
 
     private void setNearestStore(double latitude, double longitude)
     {
-        double distanceLatitude = Math.abs(mCurrentLocation.getLatitude() - latitude);
-        double distanceLongitude = Math.abs(mCurrentLocation.getLongitude() - longitude);
+        double distanceLatitude = Math.abs(mCurrentMapCenter.getMapPointGeoCoord().latitude - latitude);
+        double distanceLongitude = Math.abs(mCurrentMapCenter.getMapPointGeoCoord().longitude - longitude);
 
         Log.i(LOG, "================> distanceLatitude : " + distanceLatitude);
         Log.i(LOG, "================> distanceLongitude : " + distanceLongitude);
@@ -328,6 +392,31 @@ public class ConsumerActivity extends FragmentActivity
             string[0] = keywords;
 
             return string;
+        }
+    }
+
+    public final static int MSG_SET_TRACKING_MODE = 1000;
+
+    private final static int DELAY_SET_TRACKING_MODE = 5000;
+
+    private SearchHandler mSearchHandler = new SearchHandler();
+
+    private class SearchHandler extends Handler
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
+
+                case MSG_SET_TRACKING_MODE:
+                    MapView mapView = (MapView) msg.obj;
+                    mapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving);
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 }

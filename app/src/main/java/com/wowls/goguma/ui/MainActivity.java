@@ -1,138 +1,82 @@
 package com.wowls.goguma.ui;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
 import com.wowls.goguma.R;
-import com.wowls.goguma.service.GogumaService;
-import com.wowls.goguma.ui.consumer.ConsumerActivity;
-import com.wowls.goguma.ui.producer.ProducerActivity;
+import com.wowls.goguma.ui.search.SearchFragment;
+import com.wowls.goguma.ui.store.StoreFragment;
+import com.wowls.goguma.ui.user.UserFragment;
 
-public class MainActivity extends Activity
+public class MainActivity extends FragmentActivity
 {
-    public final static String LOG = "Goguma";
+    private static final int TAB_USER = 0;
+    private static final int TAB_SEARCH = 1;
+    private static final int TAB_STORE = 2;
 
-    private GogumaService mService;
-    private Button mBtnCon, mBtnProd;
+    private TabLayout mTabLatout;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mBtnCon = (Button) findViewById(R.id.btn_consumer);
-        mBtnProd = (Button) findViewById(R.id.btn_producer);
-    }
+        mTabLatout = (TabLayout) findViewById(R.id.tab_layout);
+        mTabLatout.addTab(mTabLatout.newTab().setIcon(R.drawable.ico_tab_user));
+        mTabLatout.addTab(mTabLatout.newTab().setIcon(R.drawable.ico_tab_search));
+        mTabLatout.addTab(mTabLatout.newTab().setIcon(R.drawable.ico_tab_store));
 
-    @Override
-    protected void onStart()
-    {
-        Log.i(LOG, "===========> onStart : " + mService);
-        super.onStart();
-
-        checkServiceStarted();
-    }
-
-    @Override
-    protected void onStop()
-    {
-        Log.i(LOG, "===========> onStop : " + mService);
-        super.onStop();
-
-        if(mService != null)
-            mService.setUiListener(null);
-    }
-
-    private void checkServiceStarted()
-    {
-        mService = GogumaService.getService();
-        Log.i(LOG, "===========> checkServiceStarted : " + mService);
-
-        if(mService == null)
+        mTabLatout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
         {
-            Intent i = new Intent(this, GogumaService.class);
-            startService(i);
-
-            mWordChainHandler.sendEmptyMessageDelayed(MSG_CHECK_SERVICE_STARTED, DELAY_CHECK_SERVICE_STARTED);
-        }
-        else
-        {
-            mService.setUiListener(mUiListener);
-            mBtnCon.setOnClickListener(mOnClickListener);
-            mBtnProd.setOnClickListener(mOnClickListener);
-        }
-    }
-
-    private GogumaService.GogumaServiceListener mUiListener = new GogumaService.GogumaServiceListener()
-    {
-        @Override
-        public void onFinish()
-        {
-
-        }
-    };
-
-    private void startConsumerActivity()
-    {
-        Intent intent = new Intent(this, ConsumerActivity.class);
-        startActivity(intent);
-    }
-
-    private void startProducerActivity()
-    {
-        Intent intent = new Intent(this, ProducerActivity.class);
-        startActivity(intent);
-    }
-
-    private View.OnClickListener mOnClickListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            switch (v.getId())
+            @Override
+            public void onTabSelected(TabLayout.Tab tab)
             {
-                case R.id.btn_consumer:
-                    Log.i(LOG, "================> startConsumerActivity");
-                    startConsumerActivity();
-                    break;
+                switch (tab.getPosition())
+                {
+                    case TAB_USER:
+                        Log.i("Goguma", "=================> onTabSelected TAB_USER");
+                        replaceFragment(new UserFragment());
+                        break;
 
-                case R.id.btn_producer:
-                    Log.i(LOG, "================> startProducerActivity");
-                    startProducerActivity();
-                    break;
+                    case TAB_SEARCH:
+                        Log.i("Goguma", "=================> onTabSelected TAB_SEARCH");
+                        replaceFragment(new SearchFragment());
+                        break;
+
+                    case TAB_STORE:
+                        Log.i("Goguma", "=================> onTabSelected TAB_STORE");
+                        replaceFragment(new StoreFragment());
+                        break;
+                }
             }
-        }
-    };
 
-
-    public final static int MSG_CHECK_SERVICE_STARTED = 1000;
-
-    private final static int DELAY_CHECK_SERVICE_STARTED = 100;
-
-    private WordChainHandler mWordChainHandler = new WordChainHandler();
-
-    private class WordChainHandler extends Handler
-    {
-        @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab)
             {
 
-                case MSG_CHECK_SERVICE_STARTED:
-                    checkServiceStarted();
-                    break;
-
-                default:
-                    break;
             }
-        }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab)
+            {
+
+            }
+        });
+
+        mTabLatout.getTabAt(TAB_SEARCH).select();
+    }
+
+    private void replaceFragment(Fragment fragment)
+    {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment).commit();
     }
 }

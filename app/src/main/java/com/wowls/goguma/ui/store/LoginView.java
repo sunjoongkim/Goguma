@@ -1,4 +1,4 @@
-package com.wowls.goguma.ui.producer;
+package com.wowls.goguma.ui.store;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -132,7 +132,7 @@ public class LoginView
 
                         if(mUserPw.equals(userPW))
                         {
-                            mHandler.sendEmptyMessage(ProducerActivity.MSG_SUCCESS_LOGIN);
+                            mHandler.sendEmptyMessage(StoreFragment.MSG_SUCCESS_LOGIN);
 
                             InputMethodManager keyboard = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                             keyboard.hideSoftInputFromWindow(mEditId.getWindowToken(), 0);

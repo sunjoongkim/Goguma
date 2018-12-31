@@ -45,7 +45,7 @@ public class Define
     public static final String MSG_INFO = "info";
 
     // type
-    public static final String TYPE_ADMIN = "adm";
-    public static final String TYPE_PRODUCER = "pro";
-    public static final String TYPE_CONSUMER = "con";
+    public static final String TYPE_ADMIN = "ADM";
+    public static final String TYPE_PRODUCER = "PRO";
+    public static final String TYPE_CONSUMER = "CON";
 }

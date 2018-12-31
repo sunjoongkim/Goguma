@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.wowls.goguma.R;
 import com.wowls.goguma.data.MenuInfo;
-import com.wowls.goguma.ui.producer.RegistMenuView;
+import com.wowls.goguma.ui.store.RegistMenuView;
 
 import java.util.ArrayList;
 
