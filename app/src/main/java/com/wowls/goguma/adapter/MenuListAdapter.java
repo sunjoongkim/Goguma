@@ -1,4 +1,4 @@
-package com.wowls.goguma.list;
+package com.wowls.goguma.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.wowls.goguma.R;
 import com.wowls.goguma.data.MenuInfo;
-import com.wowls.goguma.ui.store.RegistMenuView;
 
 import java.util.ArrayList;
 
@@ -22,12 +21,10 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MenuVi
 
     private ArrayList<MenuInfo> mMenuList;
     private Context mContext;
-    private RegistMenuView mMenuView;
     private boolean mIsEditMode = false;
 
-    public MenuListAdapter(RegistMenuView view, ArrayList<MenuInfo> list, Context context, boolean isEditMode)
+    public MenuListAdapter(ArrayList<MenuInfo> list, Context context, boolean isEditMode)
     {
-        mMenuView = view;
         mMenuList = list;
         mContext = context;
         mIsEditMode = isEditMode;
@@ -38,7 +35,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MenuVi
     public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
     {
         Log.i(LOG, "==============> onCreateViewHolder : " + i);
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.producer_regist_menu_item_view, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.store_regist_menu_item_view, viewGroup, false);
         MenuViewHolder holder = new MenuViewHolder(view);
 
         return holder;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFBF80">
+
+    <include
+        android:id="@+id/store_manage_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/store_manage_view"
+        android:visibility="invisible"/>
+
+    <include
+        android:id="@+id/guide_open_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/guide_open_view"
+        android:visibility="invisible"/>
+
+    <include
+        android:id="@+id/guide_login_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/guide_login_view"
+        android:visibility="invisible"/>
+
+</FrameLayout>

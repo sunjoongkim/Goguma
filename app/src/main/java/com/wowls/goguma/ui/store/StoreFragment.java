@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -36,37 +36,49 @@ public class StoreFragment extends Fragment
 {
     private static final String LOG = "Goguma";
 
+    private static StoreFragment mMyFragment;
     private Context mContext;
 
-    private LoginView mLoginView;
+    private GuideLoginView mGuideLoginView;
+    private GuideOpenView mGuideOpenView;
     private NotiPlaceView mNotiPlaceView;
     private RegistMenuView mRegistMenuView;
-
-    private TextView mBtnNoti, mBtnRegist;
 
     private GogumaService mService;
     private RetrofitService mRetrofitService;
 
+    public static StoreFragment getInstance()
+    {
+        Bundle args = new Bundle();
+
+        StoreFragment fragment = new StoreFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    public static StoreFragment getFragment()
+    {
+        return mMyFragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         Log.i(LOG, "==========================> StoreFragment onCreateView");
-        View view = inflater.inflate(R.layout.producer_main, container, false);
+        View view = inflater.inflate(R.layout.store_main, container, false);
+
+        mMyFragment = this;
 
         initRetrofit();
         mContext = getContext();
         mService = GogumaService.getService();
 
-        mLoginView = new LoginView(mContext, view.findViewById(R.id.login_view), mProducerHandler, mRetrofitService);
-        mNotiPlaceView = new NotiPlaceView(mContext, getActivity(), view.findViewById(R.id.notify_view), mRetrofitService);
-        mRegistMenuView = new RegistMenuView(mContext, view.findViewById(R.id.regist_menu_view), mRetrofitService);
-
-        mBtnNoti = (TextView) view.findViewById(R.id.btn_notify);
-        mBtnNoti.setOnClickListener(mOnClickListener);
-        mBtnRegist = (TextView) view.findViewById(R.id.btn_regist);
-        mBtnRegist.setOnClickListener(mOnClickListener);
+        mGuideLoginView = new GuideLoginView(mContext, view.findViewById(R.id.guide_login_view));
+        mGuideOpenView = new GuideOpenView(mContext, view.findViewById(R.id.guide_open_view));
+        mNotiPlaceView = new NotiPlaceView(mContext, getActivity(), view.findViewById(R.id.store_manage_view), mRetrofitService);
+//        mRegistMenuView = new RegistMenuView(mContext, view.findViewById(R.id.regist_menu_view), mRetrofitService);
 
         return view;
     }
@@ -80,6 +92,18 @@ public class StoreFragment extends Fragment
         checkLogin();
     }
 
+    public void initMap()
+    {
+        if(mNotiPlaceView != null)
+            mNotiPlaceView.initMap();
+    }
+
+    public void finishMap()
+    {
+        if(mNotiPlaceView != null)
+            mNotiPlaceView.finishMap();
+    }
+
     private void initRetrofit()
     {
         Retrofit retrofit = new Retrofit.Builder()
@@ -90,12 +114,53 @@ public class StoreFragment extends Fragment
         mRetrofitService = retrofit.create(RetrofitService.class);
     }
 
-    private void checkLogin()
+    public void checkLogin()
     {
-        if(mService != null && mService.getCurrentUser().isEmpty())
-            mLoginView.setVisible(true);
-        else
-            getMenuList();
+        if(mService != null)
+        {
+            if(mService.getCurrentUser().isEmpty())
+                mGuideLoginView.setVisible(true);
+            else if(!mService.isExistStore())
+                mGuideOpenView.setVisible(true);
+            else
+            {
+                mNotiPlaceView.setVisible(true);
+                getStoreList();
+            }
+        }
+    }
+
+    private void getStoreList()
+    {
+        if(mRetrofitService != null)
+        {
+            mRetrofitService.showOwnStoreList(mService.getCurrentUser()).enqueue(new Callback<ResponseBody>()
+            {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
+                {
+                    ResponseBody body = response.body();
+
+                    try
+                    {
+                        if(body == null)
+                        {
+                            retryDialog("점포 목록 가져오기 실패");
+                            return;
+                        }
+
+                        storeParser(body.string());
+                    }
+                    catch (IOException e) {}
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+
+                }
+            });
+        }
     }
 
     private void getMenuList()
@@ -131,13 +196,18 @@ public class StoreFragment extends Fragment
         }
     }
 
+    private void storeParser(String json)
+    {
+        JsonParser parser = new JsonParser();
+        JsonElement element = (JsonElement) parser.parse(json);
+    }
+
     private void menuParser(String json)
     {
         Log.i(LOG, "=============> showOwnMenuList : " + json);
 
         ArrayList<MenuInfo> menuList = new ArrayList<>();
 
-        String storeId;
         String menuName;
         String menuPrice;
 
@@ -146,15 +216,13 @@ public class StoreFragment extends Fragment
 
         for(JsonElement element : array)
         {
-            storeId = element.getAsJsonObject().get("store_id").toString().replace("\"", "");
             menuName = element.getAsJsonObject().get("menu_name").toString().replace("\"", "");
             menuPrice = element.getAsJsonObject().get("menu_price").toString();
 
-            Log.i(LOG, "=========> storeId : " + storeId);
             Log.i(LOG, "=========> menuName : " + menuName);
             Log.i(LOG, "=========> menuPrice : " + menuPrice);
 
-            MenuInfo info = new MenuInfo(storeId, menuName, menuPrice);
+            MenuInfo info = new MenuInfo(menuName, menuPrice);
             menuList.add(info);
         }
 
@@ -171,49 +239,30 @@ public class StoreFragment extends Fragment
                 .show();
     }
 
-    private View.OnClickListener mOnClickListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            switch (v.getId())
-            {
-                case R.id.btn_notify:
-                    mNotiPlaceView.setVisible(true);
-                    break;
-
-                case R.id.btn_regist:
-                    mRegistMenuView.setVisible(true);
-                    break;
-            }
-        }
-    };
-
     private void setServiceToView()
     {
-        mLoginView.setService(mService);
         mNotiPlaceView.setService(mService);
-        mRegistMenuView.setService(mService);
+//        mRegistMenuView.setService(mService);
     }
 
     private void clearView()
     {
-        mLoginView.setVisible(false);
+        mGuideLoginView.setVisible(false);
+        mGuideOpenView.setVisible(false);
         mNotiPlaceView.setVisible(false);
-        mRegistMenuView.setVisible(false);
     }
 
     public final static int MSG_CLEAR_VIEW = 1000;
-    public final static int MSG_ENTER_LOGIN_VIEW = MSG_CLEAR_VIEW + 1;
-    public final static int MSG_ENTER_REGIST_MENU_VIEW = MSG_ENTER_LOGIN_VIEW + 1;
-    public final static int MSG_ENTER_NOTI_VIEW = MSG_ENTER_REGIST_MENU_VIEW + 1;
-    public final static int MSG_SUCCESS_LOGIN = MSG_ENTER_NOTI_VIEW + 1;
+    public final static int MSG_ENTER_GUIDE_LOGIN_VIEW = MSG_CLEAR_VIEW + 1;
+    public final static int MSG_ENTER_GUIDE_OPEN_VIEW = MSG_ENTER_GUIDE_LOGIN_VIEW + 1;
+    public final static int MSG_ENTER_STORE_MANAGER_VIEW = MSG_ENTER_GUIDE_OPEN_VIEW + 1;
+    public final static int MSG_SUCCESS_LOGIN = MSG_ENTER_STORE_MANAGER_VIEW + 1;
 
     private final static int DELAY_CHECK_SERVICE_STARTED = 500;
 
-    private ProducerHandler mProducerHandler = new ProducerHandler();
+    private StoreManagerHandler mStoreManagerHandler = new StoreManagerHandler();
 
-    private class ProducerHandler extends Handler
+    private class StoreManagerHandler extends Handler
     {
         @Override
         public void handleMessage(Message msg)
@@ -224,17 +273,17 @@ public class StoreFragment extends Fragment
                     clearView();
                     break;
 
-                case MSG_ENTER_LOGIN_VIEW:
+                case MSG_ENTER_GUIDE_LOGIN_VIEW:
                     clearView();
-                    mLoginView.setVisible(true);
+                    mGuideLoginView.setVisible(true);
                     break;
 
-                case MSG_ENTER_REGIST_MENU_VIEW:
+                case MSG_ENTER_GUIDE_OPEN_VIEW:
                     clearView();
-                    mRegistMenuView.setVisible(true);
+                    mGuideOpenView.setVisible(true);
                     break;
 
-                case MSG_ENTER_NOTI_VIEW:
+                case MSG_ENTER_STORE_MANAGER_VIEW:
                     clearView();
                     mNotiPlaceView.setVisible(true);
                     break;

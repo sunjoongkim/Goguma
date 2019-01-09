@@ -54,4 +54,8 @@ public interface RetrofitService
 
     @GET(Define.URL_STORE + Define.URL_SEARCH)
     Call<ResponseBody> showStoreList(@Query(Define.URL_KEYWORDS) String... keywords);
+
+    @GET(Define.URL_STORE + "/{path}")
+    Call<ResponseBody> showStoreInfo(@Path("path") String storeId);
+
 }

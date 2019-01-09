@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFBF80">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="100dp"
+        android:padding="15dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#363636"
+        android:textSize="20sp"
+        android:text="점포 등록/관리는 로그인이 필요한\n서비스 입니다.\n로그인 화면으로 이동 하시겠습니까?"
+        />
+
+    <Button
+        android:id="@+id/btn_move"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="250dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="이동"
+        />
+
+</FrameLayout>

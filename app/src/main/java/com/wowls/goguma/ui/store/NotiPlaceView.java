@@ -1,17 +1,9 @@
 package com.wowls.goguma.ui.store;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.os.Build;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +12,7 @@ import android.widget.Button;
 import com.wowls.goguma.R;
 import com.wowls.goguma.retrofit.RetrofitService;
 import com.wowls.goguma.service.GogumaService;
+import com.wowls.goguma.ui.custom.RemoveScrollMapView;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -41,8 +34,8 @@ public class NotiPlaceView
     private GogumaService mService;
     private RetrofitService mRetrofitService;
 
-    private MapView mMapView;
-    private LocationManager mLocationManager;
+    private RemoveScrollMapView mMapView;
+    private ViewGroup mMapViewContainer;
 
     private double mLatitude;
     private double mLongitude;
@@ -56,25 +49,16 @@ public class NotiPlaceView
         mMyView = view;
         mRetrofitService = service;
 
-        mMapView = new MapView(context);
-        mMapView.setMapViewEventListener(mMapViewEventListener);
-        ViewGroup mapViewContainer = (ViewGroup) view.findViewById(R.id.map_view);
-        mapViewContainer.addView(mMapView);
-
         mBtnRegist = (Button) view.findViewById(R.id.btn_enter);
         mBtnRegist.setOnClickListener(mOnClickListener);
-        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     public void setVisible(boolean visible)
     {
         mMyView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
 
-        if(visible)
-        {
-            checkGpsState();
-            requestPermission();
-        }
+//        if(visible)
+//            initMap();
     }
 
     public void setService(GogumaService service)
@@ -82,36 +66,28 @@ public class NotiPlaceView
         mService = service;
     }
 
-
-    // GPS on/off 체크
-    private void checkGpsState()
+    public void initMap()
     {
-        if(!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        if(mMapView == null)
         {
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            mContext.startActivity(intent);
+            mMapView = new RemoveScrollMapView(mContext);
+            mMapView.setMapViewEventListener(mMapViewEventListener);
+
+            mMapViewContainer = (ViewGroup) mMyView.findViewById(R.id.map_view);
+            mMapViewContainer.addView(mMapView);
         }
     }
 
-    // 위치관련 permission 체크
-    private void requestPermission()
+    public void finishMap()
     {
-        // 마쉬멜로 이상일 경우
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if(mMapView != null && mMapViewContainer != null)
         {
-            if(checkPermission())
-                ActivityCompat.requestPermissions(mFragmentActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            mMapView.setVisibility(View.INVISIBLE);
+            mMapViewContainer.removeAllViews();
+
+            mMapView = null;
+            mMapViewContainer = null;
         }
-    }
-
-    private boolean checkPermission()
-    {
-        if(ContextCompat.checkSelfPermission(mFragmentActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(mFragmentActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return true;
-
-        return false;
     }
 
     private MapView.MapViewEventListener mMapViewEventListener = new MapView.MapViewEventListener()

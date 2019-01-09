@@ -27,16 +27,17 @@ public class Define
     public static final String KEY_STORE_DESC = "store_desc";
     public static final String KEY_STORE_ID = "store_id";
     public static final String KEY_OWNER_ID = "owner_id";
+    public static final String KEY_STORE_ENABLED = "enabled";
 
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_USER_PW = "user_pw";
     public static final String KEY_USER_TYPE = "user_type";
     public static final String KEY_USER_NAME = "user_name";
-    public static final String KEY_USER_ENABLED = "enabled";
 
-    public static final String KEY_MENU_STORE_ID = "storeId";
-    public static final String KEY_MENU_NAME = "menuName";
-    public static final String KEY_MENU_PRICE = "menuPrice";
+    public static final String KEY_MENU_STORE_ID = "store_id";
+    public static final String KEY_MENU_NAME = "menu_name";
+    public static final String KEY_MENU_PRICE = "menu_price";
+    public static final String KEY_MENU_ENABLED = "enabled";
 
     // msg
     public static final String MSG_MATCH = "match";

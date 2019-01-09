@@ -9,8 +9,11 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.wowls.goguma.data.MenuInfo;
 import com.wowls.goguma.define.ConnectionState;
 import com.wowls.goguma.define.ViewState;
+
+import java.util.ArrayList;
 
 public class GogumaService extends Service
 {
@@ -23,6 +26,13 @@ public class GogumaService extends Service
 
 //    private StompClient mClient;
     private ViewState mCurrentView;
+    private boolean mIsExistStore = false;
+
+    private String mStoreName;
+    private double mLatitude;
+    private double mLongitude;
+    private String mStoreDesc;
+    private ArrayList<MenuInfo> mMenuList = new ArrayList<>();
 
     public static GogumaService getService()
     {
@@ -80,6 +90,67 @@ public class GogumaService extends Service
 //    {
 //        return mClient;
 //    }
+
+    public void setExistStore(boolean exist)
+    {
+        mIsExistStore = exist;
+    }
+
+    public boolean isExistStore()
+    {
+        return mIsExistStore;
+    }
+
+    // OpenStore get/set
+    public void setStoreName(String name)
+    {
+        mStoreName = name;
+    }
+
+    public String getStoreName()
+    {
+        return mStoreName;
+    }
+
+    public void setLatitude(double latitude)
+    {
+        mLatitude = latitude;
+    }
+
+    public double getLatitude()
+    {
+        return mLatitude;
+    }
+
+    public void setLongitude(double longitude)
+    {
+        mLongitude = longitude;
+    }
+
+    public double getLongitude()
+    {
+        return mLongitude;
+    }
+
+    public void setStoreDesc(String desc)
+    {
+        mStoreDesc = desc;
+    }
+
+    public String getStoreDesc()
+    {
+        return mStoreDesc;
+    }
+
+    public void setMenuList(ArrayList<MenuInfo> menuList)
+    {
+        mMenuList = menuList;
+    }
+
+    public ArrayList<MenuInfo> getMenuList()
+    {
+        return mMenuList;
+    }
 
     public void setUiListener(GogumaServiceListener listener)
     {

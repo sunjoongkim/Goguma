@@ -22,15 +22,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wowls.goguma.R;
 import com.wowls.goguma.data.StoreInfo;
 import com.wowls.goguma.define.Define;
 import com.wowls.goguma.retrofit.RetrofitService;
+import com.wowls.goguma.ui.custom.RemoveScrollMapView;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -42,6 +46,7 @@ import java.util.ArrayList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -51,12 +56,22 @@ public class SearchFragment extends Fragment
 
     private static final double MAX_DISTANCE = 1000000;
 
+    private static SearchFragment mMyFragment;
+
     private Context mContext;
     private LocationManager mLocationManager;
-    private MapView mMapView;
+    private RemoveScrollMapView mMapView;
+    private ViewGroup mMapViewContainer;
+    private View mMyView;
 
     private EditText mEditKeyword;
     private ImageView mBtnSearch;
+
+    private FrameLayout mStoreInfoView;
+    private TextView mTextStoreName;
+    private TextView mTextStoreState;
+    private ImageView mImageStore;
+    private TextView mTextStoreMenu;
 
     private RetrofitService mRetrofitService;
 
@@ -69,32 +84,51 @@ public class SearchFragment extends Fragment
 
     private MapPoint mCurrentMapCenter;
 
+    public static SearchFragment getInstance()
+    {
+        Bundle args = new Bundle();
+
+        SearchFragment fragment = new SearchFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    public static SearchFragment getFragment()
+    {
+        return mMyFragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.consumer_main, container, false);
+        mMyView = inflater.inflate(R.layout.search_main, container, false);
         Log.i(LOG, "==========================> SearchFragment onCreateView");
+
+        mMyFragment = this;
 
         initRetrofit();
         mContext = getContext();
 
-        mMapView = new MapView(mContext);
-        mMapView.setMapViewEventListener(mMapViewEventListener);
+        initMap();
 
-        ViewGroup mapViewContainer = (ViewGroup) view.findViewById(R.id.map_view);
-        mapViewContainer.addView(mMapView);
-
-        mEditKeyword = (EditText) view.findViewById(R.id.edit_keyword);
-        mBtnSearch = (ImageView) view.findViewById(R.id.btn_search);
+        mEditKeyword = (EditText) mMyView.findViewById(R.id.edit_keyword);
+        mBtnSearch = (ImageView) mMyView.findViewById(R.id.btn_search);
         mBtnSearch.setOnClickListener(mOnClickListener);
+
+        mStoreInfoView = (FrameLayout) mMyView.findViewById(R.id.view_store_info);
+        mStoreInfoView.setOnClickListener(mOnClickListener);
+        mTextStoreName = (TextView) mMyView.findViewById(R.id.text_store_name);
+        mTextStoreState = (TextView) mMyView.findViewById(R.id.text_store_state);
+        mImageStore = (ImageView) mMyView.findViewById(R.id.image_store);
+        mTextStoreMenu = (TextView) mMyView.findViewById(R.id.text_store_menu);
 
         mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         checkGpsState();
         requestPermission();
 
-        return view;
+        return mMyView;
     }
 
     @Override
@@ -102,7 +136,30 @@ public class SearchFragment extends Fragment
     {
         super.onResume();
 
-//        initMapView();
+    }
+
+    public void initMap()
+    {
+        if(mMapView == null)
+        {
+            mMapView = new RemoveScrollMapView(mContext);
+            mMapView.setMapViewEventListener(mMapViewEventListener);
+
+            mMapViewContainer = (ViewGroup) mMyView.findViewById(R.id.map_view);
+            mMapViewContainer.addView(mMapView);
+        }
+    }
+
+    public void finishMap()
+    {
+        if(mMapView != null && mMapViewContainer != null)
+        {
+            mMapView.setVisibility(View.INVISIBLE);
+            mMapViewContainer.removeAllViews();
+
+            mMapView = null;
+            mMapViewContainer = null;
+        }
     }
 
     private void initRetrofit()
@@ -197,7 +254,8 @@ public class SearchFragment extends Fragment
         @Override
         public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint)
         {
-
+            if(mStoreInfoView.getVisibility() == View.VISIBLE)
+                mStoreInfoView.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -218,23 +276,27 @@ public class SearchFragment extends Fragment
         String lon;
         String lat;
 
-        mMapView.removeAllPOIItems();
-
-        for (StoreInfo info : mStoreInfo)
+        if(mMapView != null)
         {
-            lon = info.getLongitude();
-            lat = info.getLatitude();
+            mMapView.removeAllPOIItems();
 
-            double longitude = Double.parseDouble(lon);
-            double latitude = Double.parseDouble(lat);
+            for (StoreInfo info : mStoreInfo)
+            {
+                lon = info.getLongitude();
+                lat = info.getLatitude();
 
-            MapPOIItem item = new MapPOIItem();
-            MapPoint point = MapPoint.mapPointWithGeoCoord(latitude, longitude);
-            item.setItemName(info.getStoreName());
-            item.setMapPoint(point);
-            mMapView.addPOIItem(item);
+                double longitude = Double.parseDouble(lon);
+                double latitude = Double.parseDouble(lat);
 
-            setNearestStore(latitude, longitude);
+                MapPOIItem item = new MapPOIItem();
+                MapPoint point = MapPoint.mapPointWithGeoCoord(latitude, longitude);
+                item.setItemName(info.getStoreId());
+                item.setMapPoint(point);
+                mMapView.addPOIItem(item);
+                mMapView.setPOIItemEventListener(mMarkerClickListener);
+
+                setNearestStore(latitude, longitude);
+            }
         }
     }
 
@@ -259,30 +321,23 @@ public class SearchFragment extends Fragment
                 {
                     if(response.body() == null)
                     {
-                        Log.i(LOG, "===============> getStore response is null");
+                        retryDialog("점포 가져오기 실패");
                         return;
                     }
 
                     try {
                         String json = response.body().string();
-                        Log.i(LOG, "===============> getStores : " + json);
 
-                        if(response.body() == null)
-                            retryDialog("점포 가져오기 실패");
-                        else
+                        storeListParser(json);
+                        addStoreMarker();
+                        initEditText();
+
+                        if(keywords != null && keywords.length != 0)
                         {
-                            storeParser(json);
-                            addStoreMarker();
-                            initEditText();
-
-                            if(keywords != null && keywords.length != 0)
-                            {
-                                if(mStoreInfo.isEmpty())
-                                    retryDialog("검색된 점포가 없습니다.");
-                                else
-                                    mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(mNearestLatitude, mNearestLongitude), 2, true);
-                            }
-
+                            if(mStoreInfo.isEmpty())
+                                retryDialog("검색된 점포가 없습니다.");
+                            else
+                                mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(mNearestLatitude, mNearestLongitude), 2, true);
                         }
                     }
                     catch (IOException e) {
@@ -299,6 +354,43 @@ public class SearchFragment extends Fragment
         }
     }
 
+    private void getStoreInfo(MapPOIItem item)
+    {
+        Log.i(LOG, "=====================> getStoreInfo item : " + item.getItemName());
+        String itemName = item.getItemName().replace("\"", "");
+
+        if(mRetrofitService != null)
+        {
+            mRetrofitService.showStoreInfo(itemName).enqueue(new Callback<ResponseBody>()
+            {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
+                {
+                    if(response.body() == null)
+                    {
+                        retryDialog("점포 정보 가져오기 실패");
+                        return;
+                    }
+
+                    try {
+                        String json = response.body().string();
+                        Log.i(LOG, "=====================> getStoreInfo : " + json);
+                        storeParser(json);
+                    }
+                    catch (IOException e) {
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+
+                }
+            });
+        }
+    }
+
     private void retryDialog(String comment)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -308,7 +400,7 @@ public class SearchFragment extends Fragment
                 .show();
     }
 
-    private void storeParser(String json)
+    private void storeListParser(String json)
     {
         if(!mStoreInfo.isEmpty())
             mStoreInfo.clear();
@@ -324,22 +416,97 @@ public class SearchFragment extends Fragment
 
         for(JsonElement element : array)
         {
-            storeName = element.getAsJsonObject().get(Define.KEY_STORE_NAME).toString();
-            longitude = element.getAsJsonObject().get(Define.KEY_STORE_LON).toString();
-            latitude = element.getAsJsonObject().get(Define.KEY_STORE_LAT).toString();
-            storeId = element.getAsJsonObject().get(Define.KEY_STORE_ID).toString();
-            ownerId = element.getAsJsonObject().get(Define.KEY_OWNER_ID).toString();
+            if(element.isJsonNull())
+                return;
 
-            Log.i(LOG, "=========> storeName : " + storeName);
+            JsonObject object = element.getAsJsonObject();
+
+            longitude = object.get(Define.KEY_STORE_LON).toString();
+            latitude = object.get(Define.KEY_STORE_LAT).toString();
+            storeId = object.get(Define.KEY_STORE_ID).toString();
+            ownerId = object.get(Define.KEY_OWNER_ID).toString();
+            if(object.get(Define.KEY_STORE_NAME) == null)
+                storeName = storeId;
+            else
+                storeName = object.get(Define.KEY_STORE_NAME).toString();
+
             Log.i(LOG, "=========> longitude : " + longitude);
             Log.i(LOG, "=========> latitude : " + latitude);
             Log.i(LOG, "=========> storeId : " + storeId);
             Log.i(LOG, "=========> ownerId : " + ownerId);
+            Log.i(LOG, "=========> storeName : " + storeName);
 
             StoreInfo info = new StoreInfo(storeName, longitude, latitude, storeId, ownerId);
             mStoreInfo.add(info);
         }
+    }
 
+    private void storeParser(String json)
+    {
+        String menuList;
+        String ratingList;
+        String storeInfo;
+
+        JsonParser parser = new JsonParser();
+        JsonElement element = (JsonElement) parser.parse(json);
+
+        if(!element.isJsonNull())
+        {
+            JsonObject object = element.getAsJsonObject();
+
+            menuList = object.get("menuList").toString();
+            ratingList = object.get("ratingList").toString();
+            storeInfo = object.get("storeInfo").toString();
+
+            Log.i(LOG, "=========> menuList : " + menuList);
+            Log.i(LOG, "=========> ratingList : " + ratingList);
+            Log.i(LOG, "=========> storeInfo : " + storeInfo);
+
+            storeInfoParser(storeInfo);
+            menuParser(menuList);
+        }
+    }
+
+    private void storeInfoParser(String json)
+    {
+        JsonParser parser = new JsonParser();
+        JsonElement element = (JsonElement) parser.parse(json);
+
+        if(!element.isJsonNull())
+        {
+            JsonObject object = element.getAsJsonObject();
+
+            mTextStoreName.setText(object.get(Define.KEY_STORE_NAME).toString().replace("\"", ""));
+
+            if(object.get(Define.KEY_STORE_ENABLED).toString().equals("Y"))
+                mTextStoreState.setText("open");
+            else
+                mTextStoreState.setText("close");
+
+            Log.i(LOG, "=========> mTextStoreName : " + mTextStoreName.getText());
+            Log.i(LOG, "=========> mTextStoreState : " + mTextStoreState.getText());
+        }
+    }
+
+    private void menuParser(String json)
+    {
+        JsonParser parser = new JsonParser();
+        JsonArray array = (JsonArray) parser.parse(json);
+
+        mTextStoreMenu.setText("");
+
+        for(JsonElement element : array)
+        {
+            if(element.isJsonNull())
+                return;
+
+            JsonObject object = element.getAsJsonObject();
+
+            mTextStoreMenu.append(object.get(Define.KEY_MENU_NAME).toString().replace("\"", "") + " ");
+            mTextStoreMenu.append(object.get(Define.KEY_MENU_PRICE).toString() + "\n");
+        }
+
+        Log.i(LOG, "=========> mTextStoreMenu : " + mTextStoreMenu.getText());
     }
 
     private void initEditText()
@@ -378,7 +545,38 @@ public class SearchFragment extends Fragment
                 case R.id.btn_search:
                     getStores(keywordParser(mEditKeyword.getText().toString()));
                     break;
+
+                case R.id.view_store_info:
+                    break;
             }
+        }
+    };
+
+    private MapView.POIItemEventListener mMarkerClickListener = new MapView.POIItemEventListener()
+    {
+        @Override
+        public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem)
+        {
+            getStoreInfo(mapPOIItem);
+            mStoreInfoView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem)
+        {
+
+        }
+
+        @Override
+        public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType)
+        {
+
+        }
+
+        @Override
+        public void onDraggablePOIItemMoved(MapView mapView, MapPOIItem mapPOIItem, MapPoint mapPoint)
+        {
+
         }
     };
 

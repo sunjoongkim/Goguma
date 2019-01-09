@@ -1,4 +1,4 @@
-package com.wowls.goguma.ui.store;
+package com.wowls.goguma.ui.etc;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -17,6 +17,7 @@ import com.wowls.goguma.define.ConnectionState;
 import com.wowls.goguma.define.Define;
 import com.wowls.goguma.retrofit.RetrofitService;
 import com.wowls.goguma.service.GogumaService;
+import com.wowls.goguma.ui.store.StoreFragment;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,9 +25,10 @@ import java.util.HashMap;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class LoginView
+public class UserLoginView
 {
     public final static String LOG = "Goguma";
 
@@ -48,7 +50,7 @@ public class LoginView
 
     private Handler mHandler;
 
-    public LoginView(Context context, View view, Handler handler, RetrofitService service)
+    public UserLoginView(Context context, View view, Handler handler, RetrofitService service)
     {
         mContext = context;
         mMyView = view;
@@ -56,7 +58,7 @@ public class LoginView
 
         mEditId = (EditText) view.findViewById(R.id.edit_id);
         mEditPw = (EditText) view.findViewById(R.id.edit_password);
-        mBtnLogin = (Button) view.findViewById(R.id.btn_login);
+        mBtnLogin = (Button) view.findViewById(R.id.btn_move);
         mBtnLogin.setOnClickListener(mOnClickListener);
         mBtnRegister = (Button) view.findViewById(R.id.btn_register);
         mBtnRegister.setOnClickListener(mOnClickListener);
@@ -81,7 +83,7 @@ public class LoginView
         {
             switch (view.getId())
             {
-                case R.id.btn_login:
+                case R.id.btn_move:
                     login();
                     break;
 
@@ -142,7 +144,10 @@ public class LoginView
                             mEditPw.setText("");
 
                             if(mService != null)
+                            {
                                 mService.setConnectionState(ConnectionState.LOGON, userID);
+                                checkExistStore();
+                            }
                         }
                         else
                             retryDialog("비밀번호가 일치하지 않습니다.");
@@ -158,6 +163,39 @@ public class LoginView
                 public void onFailure(Call<ResponseBody> call, Throwable t)
                 {
                     Log.i(LOG, "=========> onFailure : " + t.toString());
+                }
+            });
+        }
+    }
+
+    private void checkExistStore()
+    {
+        if(mRetrofitService != null)
+        {
+            mRetrofitService.showOwnStoreList(mService.getCurrentUser()).enqueue(new Callback<ResponseBody>()
+            {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
+                {
+                    ResponseBody body = response.body();
+
+                    try
+                    {
+                        if(body == null)
+                        {
+                            retryDialog("점포 목록 가져오기 실패");
+                            return;
+                        }
+
+                        mService.setExistStore(!body.string().equals("[]"));
+                    }
+                    catch (IOException e) {}
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+
                 }
             });
         }

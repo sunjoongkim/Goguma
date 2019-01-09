@@ -1,46 +1,41 @@
-package com.wowls.goguma.ui.store;
+package com.wowls.goguma.ui.store.open;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.wowls.goguma.R;
-import com.wowls.goguma.data.MenuInfo;
-import com.wowls.goguma.define.Define;
 import com.wowls.goguma.adapter.MenuListAdapter;
+import com.wowls.goguma.data.MenuInfo;
 import com.wowls.goguma.retrofit.RetrofitService;
 import com.wowls.goguma.service.GogumaService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class RegistMenuView
+public class OpenFragmentThree extends Fragment
 {
-    public final static String LOG = "Goguma";
+    private static final String LOG = "Goguma";
 
     private Context mContext;
-    private View mMyView;
+
     private GogumaService mService;
     private RetrofitService mRetrofitService;
 
     private RecyclerView mListView;
     private MenuListAdapter mListAdapter;
 
-    private ArrayList<MenuInfo> mMenuList;
+    private ArrayList<MenuInfo> mMenuList = new ArrayList<>();
 
-    private TextView mStoreId;
     private Button mBtnAddMenu;
     private Button mBtnEditMenu;
 
@@ -51,77 +46,40 @@ public class RegistMenuView
 
     private boolean mIsEditMode = false;
 
-    public RegistMenuView(Context context, View view, RetrofitService service)
+    public static OpenFragmentThree getInstance()
     {
-        mContext = context;
-        mMyView = view;
-        mRetrofitService = service;
+        Bundle args = new Bundle();
 
-        mStoreId = (TextView) view.findViewById(R.id.text_store_id);
+        OpenFragmentThree fragment = new OpenFragmentThree();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
+        View view = inflater.inflate(R.layout.store_open_3, container, false);
+
+        mContext = getContext();
+        mService = GogumaService.getService();
+
         mListView = (RecyclerView) view.findViewById(R.id.menu_list_view);
-        mListView.setLayoutManager(new LinearLayoutManager(context));
+        mListView.setLayoutManager(new LinearLayoutManager(mContext));
         mBtnAddMenu = (Button) view.findViewById(R.id.btn_add);
         mBtnAddMenu.setOnClickListener(mOnClickListener);
         mBtnEditMenu = (Button) view.findViewById(R.id.btn_edit);
         mBtnEditMenu.setOnClickListener(mOnClickListener);
 
-        mMenuList = new ArrayList<>();
+        return view;
     }
 
-    public void setVisible(boolean visible)
+    @Override
+    public void onResume()
     {
-        mMyView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        super.onResume();
 
-        if(visible)
-        {
-        }
-    }
-
-    public void setService(GogumaService service)
-    {
-        mService = service;
-    }
-
-    public void setMenuList(ArrayList<MenuInfo> list)
-    {
-        if(list == null || list.isEmpty())
-        {
-            if(mService != null)
-                mStoreId.setText(mService.getCurrentUser());
-
-            return;
-        }
-
-        mMenuList = list;
-
-        initListAdapter();
-    }
-
-    public void registMenu(String name, String price)
-    {
-        HashMap<String, String> map = new HashMap<>();
-
-        map.put(Define.KEY_MENU_STORE_ID, mService.getCurrentUser());
-        map.put(Define.KEY_MENU_NAME, name);
-        map.put(Define.KEY_MENU_PRICE, price);
-
-        if(mRetrofitService != null && mService != null)
-        {
-            mRetrofitService.saveMenuInfo(mService.getCurrentUser(), map).enqueue(new Callback<ResponseBody>()
-            {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
-                {
-                    Log.i(LOG, "register : " + response.body());
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t)
-                {
-                    Log.i(LOG, "onFailure : " + t.toString());
-                }
-            });
-        }
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener()
@@ -145,10 +103,11 @@ public class RegistMenuView
                     String menu = mEditMenu.getText().toString();
                     String price = mEditPrice.getText().toString();
 
-                    registMenu(menu, price);
-
                     MenuInfo info = new MenuInfo(menu, price);
                     mMenuList.add(info);
+
+                    if(mService != null)
+                        mService.setMenuList(mMenuList);
 
                     if(mListAdapter == null)
                         initListAdapter();

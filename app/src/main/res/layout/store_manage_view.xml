@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn_manage_open"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center"
+        android:textSize="26sp"
+        android:textColor="#FFFFFF"
+        android:text="영업 종료하기"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="#AFAFAF"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp">
+
+            <TextView
+                android:id="@+id/text_manage_store_name"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:textSize="22sp"
+                android:textColor="#363636"/>
+
+            <RelativeLayout
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="15dp"
+                android:layout_below="@+id/text_manage_store_name">
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/btn_enter"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="right"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:text="등록"
+                android:layout_below="@+id/map_view"/>
+
+            <TextView
+                android:id="@+id/text_manage_store_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_below="@+id/btn_enter"/>
+
+            <TextView
+                android:id="@+id/text_manage_store_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_below="@+id/text_manage_store_desc"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</FrameLayout>

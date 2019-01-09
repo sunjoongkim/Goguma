@@ -22,7 +22,7 @@ public class SplashActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_main);
 
-        mWordChainHandler.sendEmptyMessageDelayed(MSG_LOADING_COMPLETED, DELAY_LOADING_COMPLETED);
+        mGogumaHandler.sendEmptyMessageDelayed(MSG_LOADING_COMPLETED, DELAY_LOADING_COMPLETED);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SplashActivity extends Activity
             Intent i = new Intent(this, GogumaService.class);
             startService(i);
 
-            mWordChainHandler.sendEmptyMessageDelayed(MSG_CHECK_SERVICE_STARTED, DELAY_CHECK_SERVICE_STARTED);
+            mGogumaHandler.sendEmptyMessageDelayed(MSG_CHECK_SERVICE_STARTED, DELAY_CHECK_SERVICE_STARTED);
         }
         else
             mService.setUiListener(mUiListener);
@@ -81,9 +81,9 @@ public class SplashActivity extends Activity
     private final static int DELAY_CHECK_SERVICE_STARTED = 100;
     private final static int DELAY_LOADING_COMPLETED = 1500;
 
-    private WordChainHandler mWordChainHandler = new WordChainHandler();
+    private GogumaHandler mGogumaHandler = new GogumaHandler();
 
-    private class WordChainHandler extends Handler
+    private class GogumaHandler extends Handler
     {
         @Override
         public void handleMessage(Message msg)

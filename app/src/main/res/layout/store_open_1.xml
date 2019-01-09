@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#999999">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textColor="#363636"
+        android:textSize="20sp"
+        android:text="스토어 이름을 입력해 주세요."
+        />
+
+    <EditText
+        android:id="@+id/edit_store_name"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="15dp"
+        android:layout_gravity="center"
+        android:singleLine="true"
+        android:padding="15dp"
+        android:textSize="20sp"
+        android:textColor="#363636"
+        />
+
+</FrameLayout>
