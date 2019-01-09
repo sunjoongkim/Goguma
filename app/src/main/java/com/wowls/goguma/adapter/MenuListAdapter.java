@@ -35,7 +35,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.MenuVi
     public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
     {
         Log.i(LOG, "==============> onCreateViewHolder : " + i);
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.store_regist_menu_item_view, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.store_manage_menu_item_view, viewGroup, false);
         MenuViewHolder holder = new MenuViewHolder(view);
 
         return holder;

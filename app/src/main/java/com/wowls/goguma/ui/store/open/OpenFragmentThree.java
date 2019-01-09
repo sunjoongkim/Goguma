@@ -130,7 +130,7 @@ public class OpenFragmentThree extends Fragment
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-        View view = LayoutInflater.from(mContext).inflate(R.layout.store_regist_menu_edit_dialog, null, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.store_manage_menu_edit_dialog, null, false);
         builder.setView(view);
 
         mEditMenu = (EditText) view.findViewById(R.id.edit_menu_name);

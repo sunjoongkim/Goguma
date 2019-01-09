@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wowls.goguma.R;
 import com.wowls.goguma.data.MenuInfo;
@@ -41,7 +42,7 @@ public class StoreFragment extends Fragment
 
     private GuideLoginView mGuideLoginView;
     private GuideOpenView mGuideOpenView;
-    private NotiPlaceView mNotiPlaceView;
+    private StoreManagerView mStoreManagerView;
     private RegistMenuView mRegistMenuView;
 
     private GogumaService mService;
@@ -77,7 +78,7 @@ public class StoreFragment extends Fragment
 
         mGuideLoginView = new GuideLoginView(mContext, view.findViewById(R.id.guide_login_view));
         mGuideOpenView = new GuideOpenView(mContext, view.findViewById(R.id.guide_open_view));
-        mNotiPlaceView = new NotiPlaceView(mContext, getActivity(), view.findViewById(R.id.store_manage_view), mRetrofitService);
+        mStoreManagerView = new StoreManagerView(mContext, getActivity(), view.findViewById(R.id.store_manage_view), mRetrofitService);
 //        mRegistMenuView = new RegistMenuView(mContext, view.findViewById(R.id.regist_menu_view), mRetrofitService);
 
         return view;
@@ -92,16 +93,23 @@ public class StoreFragment extends Fragment
         checkLogin();
     }
 
+    @Override
+    public void onDestroy()
+    {
+        mMyFragment = null;
+        super.onDestroy();
+    }
+
     public void initMap()
     {
-        if(mNotiPlaceView != null)
-            mNotiPlaceView.initMap();
+        if(mStoreManagerView != null)
+            mStoreManagerView.initMap();
     }
 
     public void finishMap()
     {
-        if(mNotiPlaceView != null)
-            mNotiPlaceView.finishMap();
+        if(mStoreManagerView != null)
+            mStoreManagerView.finishMap();
     }
 
     private void initRetrofit()
@@ -124,8 +132,9 @@ public class StoreFragment extends Fragment
                 mGuideOpenView.setVisible(true);
             else
             {
-                mNotiPlaceView.setVisible(true);
+                mStoreManagerView.setVisible(true);
                 getStoreList();
+                getMenuList();
             }
         }
     }
@@ -198,8 +207,28 @@ public class StoreFragment extends Fragment
 
     private void storeParser(String json)
     {
+        Log.i(LOG, "====================> storeParser : " + json);
+
         JsonParser parser = new JsonParser();
-        JsonElement element = (JsonElement) parser.parse(json);
+        JsonArray array = (JsonArray) parser.parse(json);
+
+        for(JsonElement element : array)
+        {
+            JsonObject object = element.getAsJsonObject();
+
+            if(mStoreManagerView != null)
+            {
+                if(object.get(Define.KEY_STORE_NAME) == null)
+                    mStoreManagerView.setTextStoreName(mService.getCurrentUser() + " 의 스토어");
+                else
+                    mStoreManagerView.setTextStoreName(element.getAsJsonObject().get(Define.KEY_STORE_NAME).toString().replace("\"", ""));
+
+                if(object.get(Define.KEY_STORE_DESC) == null)
+                    mStoreManagerView.setTextStoreDesc("");
+                else
+                    mStoreManagerView.setTextStoreDesc(element.getAsJsonObject().get(Define.KEY_STORE_DESC).toString().replace("\"", ""));
+            }
+        }
     }
 
     private void menuParser(String json)
@@ -226,8 +255,8 @@ public class StoreFragment extends Fragment
             menuList.add(info);
         }
 
-        if(mRegistMenuView != null)
-            mRegistMenuView.setMenuList(menuList);
+        if(mStoreManagerView != null)
+            mStoreManagerView.setTextStoreMenu(menuList);
     }
 
     private void retryDialog(String comment)
@@ -241,7 +270,7 @@ public class StoreFragment extends Fragment
 
     private void setServiceToView()
     {
-        mNotiPlaceView.setService(mService);
+        mStoreManagerView.setService(mService);
 //        mRegistMenuView.setService(mService);
     }
 
@@ -249,7 +278,7 @@ public class StoreFragment extends Fragment
     {
         mGuideLoginView.setVisible(false);
         mGuideOpenView.setVisible(false);
-        mNotiPlaceView.setVisible(false);
+        mStoreManagerView.setVisible(false);
     }
 
     public final static int MSG_CLEAR_VIEW = 1000;
@@ -285,12 +314,11 @@ public class StoreFragment extends Fragment
 
                 case MSG_ENTER_STORE_MANAGER_VIEW:
                     clearView();
-                    mNotiPlaceView.setVisible(true);
+                    mStoreManagerView.setVisible(true);
                     break;
 
                 case MSG_SUCCESS_LOGIN:
                     clearView();
-                    getMenuList();
                     break;
 
                 default:

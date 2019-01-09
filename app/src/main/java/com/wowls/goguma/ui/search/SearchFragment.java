@@ -138,8 +138,16 @@ public class SearchFragment extends Fragment
 
     }
 
+    @Override
+    public void onDestroy()
+    {
+        mMyFragment = null;
+        super.onDestroy();
+    }
+
     public void initMap()
     {
+        Log.i(LOG, "=========================> @@@@@@@@@@@@@@@@@ initMap : " + mMapView);
         if(mMapView == null)
         {
             mMapView = new RemoveScrollMapView(mContext);
