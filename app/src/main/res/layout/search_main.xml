@@ -4,12 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/map_view"
+    <com.wowls.bottari.ui.custom.RemoveScrollNMapView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/mapView"/>
     
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,8 +34,7 @@
             android:inputType="textShortMessage"
             android:textSize="18sp"
             android:textCursorDrawable="@drawable/edittext_cursur"
-            android:background="@drawable/edittext_round"
-            />
+            android:background="@drawable/edittext_round"/>
 
         <ImageView
             android:id="@+id/btn_search"
@@ -48,68 +45,14 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/view_store_info"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/search_view_pager"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         android:layout_marginBottom="30dp"
         android:layout_gravity="center_horizontal|bottom"
-        android:background="#CFCFCF"
         android:visibility="invisible">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginTop="15dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_store_name"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textSize="28sp"
-                android:textColor="#000000"
-                android:text="상점명"/>
-
-            <TextView
-                android:id="@+id/text_store_state"
-                android:layout_width="wrap_content"
-                android:layout_height="25dp"
-                android:layout_marginLeft="10dp"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:layout_gravity="bottom"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:textColor="#000000"
-                android:text="영업중"
-                android:background="#999999"/>
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/image_store"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/bg_image_default"/>
-
-        <TextView
-            android:id="@+id/text_store_menu"
-            android:layout_width="150dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="100dp"
-            android:layout_marginRight="50dp"
-            android:layout_gravity="right"
-            android:gravity="center_vertical|right"
-            android:textSize="20sp"
-            android:textColor="#000000"
-            android:text="붕어빵 1000원"/>
-
-    </FrameLayout>
+    </android.support.v4.view.ViewPager>
 
 </FrameLayout>

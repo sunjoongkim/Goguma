@@ -26,30 +26,38 @@
         android:background="@drawable/bg_back"/>
 
 
-    <android.support.v4.view.ViewPager
+    <com.wowls.bottari.adapter.SwipeViewPager
         android:id="@+id/view_pager_open"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="150dp"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
 
     <FrameLayout
         android:id="@+id/fragment_container_open"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="150dp"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout_open"
         android:layout_height="50dp"
         android:layout_width="match_parent"
         android:layout_marginTop="100dp"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:background="#363636"/>
+
+    <View
+        android:id="@+id/tab_block"
+        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"/>
 
     <ImageButton
         android:id="@+id/btn_prev"
