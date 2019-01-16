@@ -36,17 +36,17 @@ public interface RetrofitService
     Call<ResponseBody> getRoomId(@Body Map<String, String> user);
 
     // Store Management
-    @POST(Define.URL_STORE_MANAGER + Define.URL_OWNER + "/{path}")
+    @POST(Define.URL_STORE_MANAGER + Define.URL_OWNER + "/{path}" + Define.URL_STORE)
     Call<ResponseBody> saveStoreInfo(@Path("path") String ownerId, @Body Map<String, String> user);
 
-    @GET(Define.URL_STORE_MANAGER + Define.URL_OWNER + "/{path}")
+    @GET(Define.URL_STORE_MANAGER + Define.URL_OWNER + "/{path}" + Define.URL_STORE)
     Call<ResponseBody> showOwnStoreList(@Path("path") String ownerId);
 
-    @GET(Define.URL_STORE_MANAGER + Define.URL_STORE + "/{path}")
-    Call<ResponseBody> showOwnMenuList(@Path("path") String storeId);
+    @GET(Define.URL_STORE_MANAGER + Define.URL_OWNER + "/{ownerId}" + Define.URL_STORE + "/{storeId}" + Define.URL_MENU)
+    Call<ResponseBody> showOwnMenuList(@Path("ownerId") String ownerId, @Path("storeId") String storeId);
 
-    @POST(Define.URL_STORE_MANAGER + Define.URL_STORE + "/{path}")
-    Call<ResponseBody> saveMenuInfo(@Path("path") String storeId, @Body Map<String, String> menu);
+    @POST(Define.URL_STORE_MANAGER + Define.URL_OWNER + "/{ownerId}" + Define.URL_STORE + "/{storeId}" + Define.URL_MENU)
+    Call<ResponseBody> saveMenuInfo(@Path("ownerId") String ownerId, @Path("storeId") String storeId, @Body Map<String, String> menu);
 
     // Store
     @GET(Define.URL_STORE + Define.URL_SEARCH)

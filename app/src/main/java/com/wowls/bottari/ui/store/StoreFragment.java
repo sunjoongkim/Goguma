@@ -179,7 +179,7 @@ public class StoreFragment extends Fragment
     {
         if(mRetrofitService != null)
         {
-            mRetrofitService.showOwnMenuList(mService.getCurrentUser()).enqueue(new Callback<ResponseBody>()
+            mRetrofitService.showOwnMenuList(mService.getCurrentUser(), mService.getCurrentUser()).enqueue(new Callback<ResponseBody>()
             {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)

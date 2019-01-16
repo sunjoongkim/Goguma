@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -28,6 +30,8 @@
 
         <activity android:name=".ui.MainActivity"/>
         <activity android:name=".ui.store.open.OpenStoreActivity"/>
+        <activity android:name=".ui.etc.user.regist.EtcUserRegistActivity"/>
+        <activity android:name=".ui.search.info.SearchInfoActivity"/>
 
         <service android:name=".service.GogumaService"/>
 

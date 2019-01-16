@@ -18,18 +18,18 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="30dp"
             android:layout_marginTop="15dp"
-            android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/text_store_name"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:textSize="28sp"
-                android:textColor="#000000"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical"
+                android:textSize="20sp"
+                android:textColor="#363636"
                 android:text="상점명"/>
 
             <TextView
@@ -42,7 +42,7 @@
                 android:layout_gravity="bottom"
                 android:gravity="center"
                 android:textSize="14sp"
-                android:textColor="#000000"
+                android:textColor="#363636"
                 android:text="영업중"
                 android:background="#999999"/>
 
@@ -56,28 +56,29 @@
                 android:layout_gravity="bottom"
                 android:gravity="center"
                 android:textSize="14sp"
-                android:textColor="#000000"/>
+                android:textColor="#363636"/>
 
         </LinearLayout>
 
         <ImageView
             android:id="@+id/image_store"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/bg_image_default"/>
+            android:layout_width="135dp"
+            android:layout_height="110dp"
+            android:layout_marginTop="55dp"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/sample_store_image2"/>
 
         <TextView
             android:id="@+id/text_store_menu"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginTop="100dp"
-            android:layout_marginRight="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginLeft="150dp"
+            android:layout_marginRight="30dp"
             android:layout_gravity="right"
-            android:gravity="center_vertical|right"
-            android:textSize="20sp"
-            android:textColor="#000000"
-            android:text="붕어빵 1000원"/>
+            android:gravity="top|right"
+            android:textSize="16sp"
+            android:textColor="#363636"/>
 
     </FrameLayout>
 

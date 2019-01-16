@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,18 +32,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nhn.android.maps.NMapActivity;
 import com.nhn.android.maps.NMapContext;
 import com.nhn.android.maps.NMapController;
 import com.nhn.android.maps.NMapLocationManager;
 import com.nhn.android.maps.NMapView;
 import com.nhn.android.maps.maplib.NGeoPoint;
 import com.nhn.android.maps.nmapmodel.NMapError;
+import com.nhn.android.maps.nmapmodel.NMapPlacemark;
 import com.nhn.android.maps.overlay.NMapPOIdata;
 import com.nhn.android.maps.overlay.NMapPOIitem;
 import com.nhn.android.mapviewer.overlay.NMapMyLocationOverlay;
 import com.nhn.android.mapviewer.overlay.NMapOverlayManager;
 import com.nhn.android.mapviewer.overlay.NMapPOIdataOverlay;
 import com.wowls.bottari.R;
+import com.wowls.bottari.adapter.SearchListAdapter;
 import com.wowls.bottari.adapter.SearchPagerAdapter;
 import com.wowls.bottari.data.StoreInfo;
 import com.wowls.bottari.define.Define;
@@ -70,7 +74,6 @@ public class SearchFragment extends Fragment
     private static final String LOG = "Goguma";
 
     private static final String CLIENT_ID = "31yix7y141";
-    private static final double MAX_DISTANCE = 1000000;
 
     private NMapContext mMapContext;
     private NMapLocationManager mMapLocationManager;
@@ -90,17 +93,22 @@ public class SearchFragment extends Fragment
     private View mMyView;
 
     private EditText mEditKeyword;
+    private ImageView mBtnSearchMode;
     private ImageView mBtnSearch;
 
+    private SearchListAdapter mListAdapter;
     private RetrofitService mRetrofitService;
 
     private ViewPager mSearchViewPager;
     private SearchPagerAdapter mPagerAdapter;
 
+    private RecyclerView mListView;
+
     private ArrayList<StoreInfo> mStoreList = new ArrayList<>();
 
     private boolean mIsInitMap = true;
     private boolean mIsLoadedStore = false;
+    private boolean mIsListMode = false;
 
     private NGeoPoint mCurrentPoint;
 
@@ -159,8 +167,12 @@ public class SearchFragment extends Fragment
         initMap();
 
         mEditKeyword = (EditText) mMyView.findViewById(R.id.edit_keyword);
+        mBtnSearchMode = (ImageView) mMyView.findViewById(R.id.btn_search_mode);
+        mBtnSearchMode.setOnClickListener(mOnClickListener);
         mBtnSearch = (ImageView) mMyView.findViewById(R.id.btn_search);
         mBtnSearch.setOnClickListener(mOnClickListener);
+        mListView = (RecyclerView) mMyView.findViewById(R.id.search_list_view);
+        mListView.setHasFixedSize(true);
     }
 
     @Override
@@ -228,6 +240,8 @@ public class SearchFragment extends Fragment
             mMapView.setOnMapStateChangeListener(mOnMapStateChangeListener);
             mMapView.setOnMapViewTouchEventListener(mOnMapTouchEventListener);
 
+            mMapContext.setMapDataProviderListener(mOnDataProviderListener);
+
             mMapLocationManager = new NMapLocationManager(mContext);
             mMapLocationManager.setOnLocationChangeListener(onMyLocationChangeListener);
             mMapLocationManager.enableMyLocation(true);
@@ -275,6 +289,12 @@ public class SearchFragment extends Fragment
         mMapController.animateTo(point, true);
         mPoiDataOverlay.selectPOIitem(mPOIdata.getPOIitem(index), true);
         Log.i(LOG, "===============> onPageSelected point : " + point);
+    }
+
+    private void initListAdapter()
+    {
+        mListAdapter = new SearchListAdapter(mStoreList, mContext, mRetrofitService);
+        mListView.setAdapter(mListAdapter);
     }
 
     // GPS on/off 체크
@@ -330,6 +350,7 @@ public class SearchFragment extends Fragment
                 {
                     sortStoreList();
                     initPagerView();
+                    initListAdapter();
                 }
             }
             return true;
@@ -422,6 +443,21 @@ public class SearchFragment extends Fragment
         public void onSingleTapUp(NMapView nMapView, MotionEvent motionEvent)
         {
 
+        }
+    };
+
+    private NMapActivity.OnDataProviderListener mOnDataProviderListener = new NMapActivity.OnDataProviderListener()
+    {
+        @Override
+        public void onReverseGeocoderResponse(NMapPlacemark nMapPlacemark, NMapError nMapError)
+        {
+            if(nMapError == null && nMapPlacemark != null)
+            {
+                Intent broadcast = new Intent();
+                broadcast.setAction("action_store_address");
+                broadcast.putExtra("store_address", nMapPlacemark.toString());
+                mContext.sendBroadcast(broadcast);
+            }
         }
     };
 
@@ -549,7 +585,7 @@ public class SearchFragment extends Fragment
             Log.i(LOG, "=========> storeId : " + storeId);
             Log.i(LOG, "=========> storeName : " + storeName);
 
-            StoreInfo info = new StoreInfo(storeName, longitude, latitude, storeId);
+            StoreInfo info = new StoreInfo(storeName, Double.parseDouble(longitude), Double.parseDouble(latitude), storeId);
             mStoreList.add(info);
         }
 
@@ -559,6 +595,7 @@ public class SearchFragment extends Fragment
         {
             sortStoreList();
             initPagerView();
+            initListAdapter();
         }
     }
 
@@ -588,11 +625,14 @@ public class SearchFragment extends Fragment
         addStoreMarker();
     }
 
+    public void getStoreAddress(double lon, double lat)
+    {
+        if(mMapContext != null)
+            mMapContext.findPlacemarkAtLocation(lon, lat);
+    }
+
     private void addStoreMarker()
     {
-        String lon;
-        String lat;
-
         if(mOverlayManager != null)
         {
             mOverlayManager.clearOverlays();
@@ -606,11 +646,8 @@ public class SearchFragment extends Fragment
 
             for (StoreInfo info : mStoreList)
             {
-                lon = info.getLongitude();
-                lat = info.getLatitude();
-
-                double longitude = Double.parseDouble(lon);
-                double latitude = Double.parseDouble(lat);
+                double longitude = info.getLongitude();
+                double latitude = info.getLatitude();
 
                 mPOIdata.addPOIitem(longitude, latitude, null, markerId, info.getStoreId());
             }
@@ -644,10 +681,20 @@ public class SearchFragment extends Fragment
         {
             switch (v.getId())
             {
+                case R.id.btn_search_mode:
+                    mIsListMode = !mIsListMode;
+                    mListView.setVisibility(mIsListMode ? View.VISIBLE : View.INVISIBLE);
+
+                    if(mIsListMode)
+                        mBtnSearchMode.setBackgroundResource(R.drawable.ico_map);
+                    else
+                        mBtnSearchMode.setBackgroundResource(R.drawable.ico_menu);
+
+                    break;
+
                 case R.id.btn_search:
                     getStores(keywordParser(mEditKeyword.getText().toString()));
                     break;
-
             }
         }
     };

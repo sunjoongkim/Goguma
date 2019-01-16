@@ -6,22 +6,77 @@
     android:orientation="vertical"
     android:background="#A0FFF3">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="70dp"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="#000000"
-        android:text="계정 관리"
-        />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tab_user"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="#363636"
+            android:textSize="15dp"
+            android:text="계정관리"
+            android:background="#999999"/>
+
+        <TextView
+            android:id="@+id/tab_setting"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="#363636"
+            android:textSize="15dp"
+            android:text="앱 설정"
+            android:background="#999999"/>
+
+        <TextView
+            android:id="@+id/tab_etc"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="#363636"
+            android:textSize="15dp"
+            android:text="기타"
+            android:background="#999999"/>
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/etc_user_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        layout="@layout/etc_user"
+        android:visibility="invisible"/>
 
     <include
         android:id="@+id/user_login_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/user_login_view"
+        android:layout_marginTop="50dp"
+        layout="@layout/etc_user_login_view"
         android:visibility="invisible"/>
+
+    <include
+        android:id="@+id/etc_setting_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        layout="@layout/etc_app_setting"
+        android:visibility="invisible"/>
+
+    <include
+        android:id="@+id/etc_3_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        layout="@layout/etc_3"
+        android:visibility="invisible"/>
+
 
 </FrameLayout>

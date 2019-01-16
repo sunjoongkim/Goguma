@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A0FFF3">
+
+    <TextView
+        android:id="@+id/text_id"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:text="아이디"
+        />
+
+    <EditText
+        android:id="@+id/edit_id_regist"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:inputType="textEmailAddress"
+        android:layout_toRightOf="@id/text_id"
+        />
+
+    <TextView
+        android:id="@+id/text_nick"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:text="닉네임"
+        android:layout_below="@id/text_id"
+        />
+
+    <EditText
+        android:id="@+id/edit_nick_regist"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:inputType="textShortMessage"
+        android:layout_below="@id/edit_id_regist"
+        />
+
+    <TextView
+        android:id="@+id/text_pw"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:text="비밀번호"
+        android:layout_below="@id/text_nick"
+        />
+
+    <EditText
+        android:id="@+id/edit_password_regist"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:inputType="textPassword"
+        android:layout_below="@id/edit_nick_regist"
+        />
+
+    <TextView
+        android:id="@+id/text_pw_2"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:text="비밀번호 확인"
+        android:layout_below="@id/text_pw"
+        />
+
+    <EditText
+        android:id="@+id/edit_password_2_regist"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:inputType="textPassword"
+        android:layout_below="@id/edit_password_regist"
+        />
+
+    <TextView
+        android:id="@+id/text_birth"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:text="생년월일"
+        android:layout_below="@id/text_pw_2"
+        />
+
+    <EditText
+        android:id="@+id/edit_birth_regist"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:inputType="numberDecimal"
+        android:layout_below="@id/edit_password_2_regist"
+        />
+
+    <TextView
+        android:id="@+id/text_gender"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
+        android:text="성별"
+        android:layout_below="@id/text_birth"
+        />
+
+    <RadioGroup
+        android:id="@+id/group_gender"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal"
+        android:layout_below="@id/edit_birth_regist">
+
+        <RadioButton
+            android:id="@+id/btn_male"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:textColor="#363636"
+            android:text="남성"/>
+
+        <RadioButton
+            android:id="@+id/btn_female"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center_vertical"
+            android:textColor="#363636"
+            android:text="여성"/>
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_complete"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="완료"
+        />
+
+</RelativeLayout>

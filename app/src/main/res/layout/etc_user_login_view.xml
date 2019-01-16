@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A0FFF3">
+
+    <TextView
+        android:id="@+id/text_login"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:text="로그인"
+        />
+
+    <EditText
+        android:id="@+id/edit_id"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:hint="@string/id"
+        android:inputType="text"
+        android:layout_below="@id/text_login"
+        />
+
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#363636"
+        android:textColorHint="#999999"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:layout_below="@id/edit_id"
+        />
+
+    <TextView
+        android:id="@+id/btn_find"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="50dp"
+        android:gravity="center"
+        android:text="아이디/비밀번호 찾기"
+        android:textColor="#363636"
+        android:layout_below="@id/edit_password"
+        />
+
+    <TextView
+        android:id="@+id/btn_login"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="50dp"
+        android:layout_gravity="right"
+        android:gravity="center"
+        android:text="@string/login"
+        android:textColor="#363636"
+        android:layout_below="@id/edit_password"
+        android:layout_toRightOf="@id/btn_find"
+        />
+
+    <Button
+        android:id="@+id/btn_login_naver"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="네이버로 로그인"
+        android:layout_below="@id/btn_login"
+        />
+
+    <Button
+        android:id="@+id/btn_login_kakao"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="카카오로 로그인"
+        android:layout_below="@id/btn_login_naver"
+        />
+
+    <Button
+        android:id="@+id/btn_login_facebook"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="페이스북으로 로그인"
+        android:layout_below="@id/btn_login_kakao"
+        />
+
+    <Button
+        android:id="@+id/btn_move_register"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="@string/register"
+        />
+
+</RelativeLayout>

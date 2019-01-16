@@ -23,6 +23,7 @@ public class GogumaService extends Service
 
     private ConnectionState mConnectionState = ConnectionState.LOGOFF;
     private String mCurrentUser = "";
+    private String mCurrentUserNick = "";
 
 //    private StompClient mClient;
     private ViewState mCurrentView;
@@ -63,15 +64,21 @@ public class GogumaService extends Service
         return null;
     }
 
-    public void setConnectionState(ConnectionState state, String user)
+    public void setConnectionState(ConnectionState state, String user, String nick)
     {
         mConnectionState = state;
         mCurrentUser = user;
+        mCurrentUserNick = nick;
     }
 
     public String getCurrentUser()
     {
         return mCurrentUser;
+    }
+
+    public String getCurrentUserNick()
+    {
+        return mCurrentUserNick;
     }
 
     public void setCurrentView(ViewState state)
@@ -210,7 +217,7 @@ public class GogumaService extends Service
             switch (msg.what)
             {
                 case MSG_DISCONNECT_USER:
-                    setConnectionState(ConnectionState.LOGOFF, "");
+                    setConnectionState(ConnectionState.LOGOFF, "", "");
                     break;
 
             }

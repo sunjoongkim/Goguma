@@ -374,7 +374,7 @@ public class StoreManagerView
 
         if(mRetrofitService != null && mService != null)
         {
-            mRetrofitService.saveMenuInfo(mService.getCurrentUser(), map).enqueue(new Callback<ResponseBody>()
+            mRetrofitService.saveMenuInfo(mService.getCurrentUser(), mService.getCurrentUser(), map).enqueue(new Callback<ResponseBody>()
             {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)

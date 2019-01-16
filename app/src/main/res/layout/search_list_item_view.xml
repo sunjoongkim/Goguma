@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/view_item">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/edittext_desc">
+
+        <ImageView
+            android:id="@+id/image_store"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/sample_store_image2"/>
+
+        <TextView
+            android:id="@+id/text_store_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="#363636"
+            android:text="상점명"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:layout_below="@id/image_store"/>
+
+        <TextView
+            android:id="@+id/text_store_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="#363636"
+            android:text="영업중"
+            android:background="#999999"
+            android:layout_below="@id/text_store_name"/>
+
+        <TextView
+            android:id="@+id/text_store_distance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="#363636"
+            android:layout_below="@id/text_store_name"
+            android:layout_toRightOf="@id/text_store_state"/>
+
+        <TextView
+            android:id="@+id/text_store_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="top"
+            android:textSize="16sp"
+            android:textColor="#363636"
+            android:layout_below="@id/text_store_state"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

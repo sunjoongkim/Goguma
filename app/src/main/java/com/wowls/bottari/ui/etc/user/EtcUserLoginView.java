@@ -1,14 +1,16 @@
-package com.wowls.bottari.ui.etc;
+package com.wowls.bottari.ui.etc.user;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,7 +19,8 @@ import com.wowls.bottari.define.ConnectionState;
 import com.wowls.bottari.define.Define;
 import com.wowls.bottari.retrofit.RetrofitService;
 import com.wowls.bottari.service.GogumaService;
-import com.wowls.bottari.ui.store.StoreFragment;
+import com.wowls.bottari.ui.etc.EtcFragment;
+import com.wowls.bottari.ui.etc.user.regist.EtcUserRegistActivity;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,9 +29,11 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class UserLoginView
+public class EtcUserLoginView
 {
     public final static String LOG = "Goguma";
 
@@ -40,7 +45,11 @@ public class UserLoginView
 
     private EditText mEditId;
     private EditText mEditPw;
-    private Button mBtnLogin;
+    private TextView mBtnFind;
+    private TextView mBtnLogin;
+    private Button mBtnLoginNaver;
+    private Button mBtnLoginKakao;
+    private Button mBtnLoginFacebook;
     private Button mBtnRegister;
 
     private String mUserId;
@@ -50,17 +59,27 @@ public class UserLoginView
 
     private Handler mHandler;
 
-    public UserLoginView(Context context, View view, Handler handler, RetrofitService service)
+    public EtcUserLoginView(Context context, View view, Handler handler)
     {
         mContext = context;
         mMyView = view;
-        mRetrofitService = service;
+
+        mService = GogumaService.getService();
+        initRetrofit();
 
         mEditId = (EditText) view.findViewById(R.id.edit_id);
         mEditPw = (EditText) view.findViewById(R.id.edit_password);
-        mBtnLogin = (Button) view.findViewById(R.id.btn_move);
+        mBtnFind = (TextView) view.findViewById(R.id.btn_find);
+        mBtnFind.setOnClickListener(mOnClickListener);
+        mBtnLogin = (TextView) view.findViewById(R.id.btn_login);
         mBtnLogin.setOnClickListener(mOnClickListener);
-        mBtnRegister = (Button) view.findViewById(R.id.btn_register);
+        mBtnLoginNaver = (Button) view.findViewById(R.id.btn_login_naver);
+        mBtnLoginNaver.setOnClickListener(mOnClickListener);
+        mBtnLoginKakao = (Button) view.findViewById(R.id.btn_login_kakao);
+        mBtnLoginKakao.setOnClickListener(mOnClickListener);
+        mBtnLoginFacebook = (Button) view.findViewById(R.id.btn_login_facebook);
+        mBtnLoginFacebook.setOnClickListener(mOnClickListener);
+        mBtnRegister = (Button) view.findViewById(R.id.btn_move_register);
         mBtnRegister.setOnClickListener(mOnClickListener);
 
         mHandler = handler;
@@ -71,9 +90,14 @@ public class UserLoginView
         mMyView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    public void setService(GogumaService service)
+    private void initRetrofit()
     {
-        mService = service;
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(Define.URL_BASE)
+                .build();
+
+        mRetrofitService = retrofit.create(RetrofitService.class);
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener()
@@ -83,12 +107,13 @@ public class UserLoginView
         {
             switch (view.getId())
             {
-                case R.id.btn_move:
+                case R.id.btn_login:
                     login();
                     break;
 
-                case R.id.btn_register:
-                    register();
+                case R.id.btn_move_register:
+                    Intent intent = new Intent(mContext, EtcUserRegistActivity.class);
+                    mContext.startActivity(intent);
                     break;
 
                 default:
@@ -99,22 +124,20 @@ public class UserLoginView
 
     private void login()
     {
-        final String userID = mEditId.getText().toString();
-        final String userPW = mEditPw.getText().toString();
+        final String userId = mEditId.getText().toString();
+        final String userPw = mEditPw.getText().toString();
 
         Log.i(LOG, "============> mRetrofitService : " + mRetrofitService);
 
-        if(mRetrofitService != null && isValidInfo(userID, userPW))
+        if(mRetrofitService != null && isValidInfo(userId, userPw))
         {
-            mRetrofitService.getUser(userID).enqueue(new Callback<ResponseBody>()
+            mRetrofitService.getUser(userId).enqueue(new Callback<ResponseBody>()
             {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response)
                 {
                     if(response.body() == null)
                         Log.i(LOG, "=========> onResponse is null");
-
-                    Log.i(LOG, "=========> onResponse : " + response.body().toString());
 
                     try {
                         String userColumn = response.body().string();
@@ -129,12 +152,9 @@ public class UserLoginView
 
                         parseUserColumn(userColumn);
 
-                        Log.i(LOG, "===============> mUserPw : " + mUserPw);
-                        Log.i(LOG, "===============> userPW : " + userPW);
-
-                        if(mUserPw.equals(userPW))
+                        if(mUserPw.equals(userPw))
                         {
-                            mHandler.sendEmptyMessage(StoreFragment.MSG_SUCCESS_LOGIN);
+                            mHandler.sendEmptyMessage(EtcFragment.MSG_SUCCESS_LOGIN);
 
                             InputMethodManager keyboard = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                             keyboard.hideSoftInputFromWindow(mEditId.getWindowToken(), 0);
@@ -145,8 +165,9 @@ public class UserLoginView
 
                             if(mService != null)
                             {
-                                mService.setConnectionState(ConnectionState.LOGON, userID);
+                                mService.setConnectionState(ConnectionState.LOGON, userId, mUserName);
                                 checkExistStore();
+                                setVisible(false);
                             }
                         }
                         else

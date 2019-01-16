@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:id="@+id/text_store_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="#363636"
+        android:text="스토어 상세 정보"
+        android:background="#999999"
+        />
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/bg_back"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager_store_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="60dp"/>
+
+    <com.wowls.bottari.ui.custom.PageIndicator
+        android:id="@+id/page_indicator_store_image"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="270dp"
+        app:strokeWidth="20dp"
+        app:lineWidth="20dp"
+        app:gapWidth="20dp"
+        app:unselectedColor="#888888"
+        app:selectedColor="#BC0000"
+        />
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout_store_info"
+        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="290dp"
+        app:tabTextColor="#363636"
+        android:background="#DFDFDF"/>
+
+    <com.wowls.bottari.adapter.SwipeViewPager
+        android:id="@+id/view_pager_store_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="340dp"/>
+
+</FrameLayout>

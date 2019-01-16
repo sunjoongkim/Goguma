@@ -23,7 +23,7 @@
         android:gravity="center"
         android:textColor="#363636"
         android:textSize="20sp"
-        android:text="점포를 개설 하시겠습니까?"
+        android:text="당신의 보따리를 오픈 하시겠습니까?"
         />
 
 </FrameLayout>

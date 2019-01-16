@@ -12,6 +12,7 @@ public class Define
     public static final String URL_STORE_MANAGER = "/store-management";
     public static final String URL_STORE = "/stores";
     public static final String URL_OWNER = "/owners";
+    public static final String URL_MENU = "/menus";
 
     public static final String URL_SEARCH = "/search";
     public static final String URL_KEYWORDS = "keywords";
@@ -28,6 +29,7 @@ public class Define
     public static final String KEY_STORE_ID = "store_id";
     public static final String KEY_OWNER_ID = "owner_id";
     public static final String KEY_STORE_ENABLED = "enabled";
+    public static final String KEY_STORE_SCORE = "store_score";
 
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_USER_PW = "user_pw";
@@ -54,4 +56,5 @@ public class Define
     public static final float BIG_SCALE = 1.0f;
     public static final float SMALL_SCALE = 0.7f;
     public static final float DIFF_SCALE = BIG_SCALE - SMALL_SCALE;
+
 }

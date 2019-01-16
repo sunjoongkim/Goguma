@@ -2,6 +2,7 @@ package com.wowls.bottari.ui.etc;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,27 +15,31 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wowls.bottari.R;
-import com.wowls.bottari.define.Define;
-import com.wowls.bottari.retrofit.RetrofitService;
 import com.wowls.bottari.service.GogumaService;
-
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.wowls.bottari.ui.etc.etc.EtcView;
+import com.wowls.bottari.ui.etc.setting.EtcSettingView;
+import com.wowls.bottari.ui.etc.user.EtcUserLoginView;
+import com.wowls.bottari.ui.etc.user.EtcUserView;
 
 public class EtcFragment extends Fragment
 {
     private static final String LOG = "Goguma";
 
+    private static final int TAB_USER = 0;
+    private static final int TAB_SETTING = 1;
+    private static final int TAB_ETC = 2;
+
+    private static EtcFragment mMyFragment;
+
     private Context mContext;
-
-    private UserLoginView mLoginView;
-
-    private TextView mBtnNoti, mBtnRegist;
-
     private GogumaService mService;
-    private RetrofitService mRetrofitService;
 
-    private Handler mHandler;
+    private TextView mBtnUser, mBtnSetting, mBtnEtc;
+
+    private EtcView mEtcView;
+    private EtcSettingView mEtcSettingView;
+    private EtcUserView mEtcUserView;
+    private EtcUserLoginView mLoginView;
 
     public static EtcFragment getInstance()
     {
@@ -46,17 +51,35 @@ public class EtcFragment extends Fragment
         return fragment;
     }
 
+    public static EtcFragment getFragment()
+    {
+        return mMyFragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.etc_main, container, false);
 
-        initRetrofit();
         mContext = getContext();
         mService = GogumaService.getService();
 
-        mLoginView = new UserLoginView(mContext, view.findViewById(R.id.user_login_view), mUserHandler, mRetrofitService);
+        mBtnUser = (TextView) view.findViewById(R.id.tab_user);
+        mBtnUser.setOnClickListener(mOnClickListener);
+        mBtnUser.setBackgroundColor(Color.parseColor("#A0FFF3"));
+
+        mBtnSetting = (TextView) view.findViewById(R.id.tab_setting);
+        mBtnSetting.setOnClickListener(mOnClickListener);
+        mBtnEtc = (TextView) view.findViewById(R.id.tab_etc);
+        mBtnEtc.setOnClickListener(mOnClickListener);
+
+        mEtcUserView = new EtcUserView(mContext, view.findViewById(R.id.etc_user_view), mUserHandler);
+        mEtcUserView.setVisible(true);
+        mLoginView = new EtcUserLoginView(mContext, view.findViewById(R.id.user_login_view), mUserHandler);
+
+        mEtcSettingView = new EtcSettingView(mContext, view.findViewById(R.id.etc_setting_view));
+        mEtcView = new EtcView(mContext, view.findViewById(R.id.etc_3_view));
 
         return view;
     }
@@ -66,24 +89,13 @@ public class EtcFragment extends Fragment
     {
         super.onResume();
 
-        setServiceToView();
         checkLogin();
     }
 
-    private void initRetrofit()
+    @Override
+    public void onPause()
     {
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(Define.URL_BASE)
-                .build();
-
-        mRetrofitService = retrofit.create(RetrofitService.class);
-    }
-
-    private void checkLogin()
-    {
-        if(mService != null && mService.getCurrentUser().isEmpty())
-            mLoginView.setVisible(true);
+        super.onPause();
     }
 
     private void retryDialog(String comment)
@@ -95,6 +107,29 @@ public class EtcFragment extends Fragment
                 .show();
     }
 
+    private void clearView()
+    {
+        mBtnUser.setBackgroundColor(Color.parseColor("#999999"));
+        mBtnSetting.setBackgroundColor(Color.parseColor("#999999"));
+        mBtnEtc.setBackgroundColor(Color.parseColor("#999999"));
+
+        mEtcUserView.setVisible(false);
+        mEtcSettingView.setVisible(false);
+        mEtcView.setVisible(false);
+        mLoginView.setVisible(false);
+    }
+
+    public void checkLogin()
+    {
+        if(mService != null)
+        {
+            if(mService.getCurrentUser().isEmpty())
+                mLoginView.setVisible(true);
+            else
+                mEtcUserView.setVisible(true);
+        }
+    }
+
     private View.OnClickListener mOnClickListener = new View.OnClickListener()
     {
         @Override
@@ -102,25 +137,36 @@ public class EtcFragment extends Fragment
         {
             switch (v.getId())
             {
+                case R.id.tab_user:
+                    clearView();
+                    mBtnUser.setBackgroundColor(Color.parseColor("#A0FFF3"));
+
+                    checkLogin();
+                    break;
+
+                case R.id.tab_setting:
+                    clearView();
+                    mBtnSetting.setBackgroundColor(Color.parseColor("#A0FFF3"));
+                    mEtcSettingView.setVisible(true);
+                    break;
+
+                case R.id.tab_etc:
+                    clearView();
+                    mBtnEtc.setBackgroundColor(Color.parseColor("#A0FFF3"));
+                    mEtcView.setVisible(true);
+                    break;
             }
         }
     };
 
-    private void setServiceToView()
-    {
-        mLoginView.setService(mService);
-    }
 
-    private void clearView()
-    {
-        mLoginView.setVisible(false);
-    }
 
     public final static int MSG_CLEAR_VIEW = 1000;
     public final static int MSG_ENTER_LOGIN_VIEW = MSG_CLEAR_VIEW + 1;
     public final static int MSG_ENTER_REGIST_MENU_VIEW = MSG_ENTER_LOGIN_VIEW + 1;
     public final static int MSG_ENTER_NOTI_VIEW = MSG_ENTER_REGIST_MENU_VIEW + 1;
     public final static int MSG_SUCCESS_LOGIN = MSG_ENTER_NOTI_VIEW + 1;
+    public final static int MSG_SUCCESS_LOGOUT = MSG_SUCCESS_LOGIN + 1;
 
     private final static int DELAY_CHECK_SERVICE_STARTED = 500;
 
@@ -134,24 +180,23 @@ public class EtcFragment extends Fragment
             switch (msg.what)
             {
                 case MSG_CLEAR_VIEW:
-                    clearView();
                     break;
 
                 case MSG_ENTER_LOGIN_VIEW:
-                    clearView();
-                    mLoginView.setVisible(true);
                     break;
 
                 case MSG_ENTER_REGIST_MENU_VIEW:
-                    clearView();
                     break;
 
                 case MSG_ENTER_NOTI_VIEW:
-                    clearView();
                     break;
 
                 case MSG_SUCCESS_LOGIN:
-                    clearView();
+                    checkLogin();
+                    break;
+
+                case MSG_SUCCESS_LOGOUT:
+                    checkLogin();
                     break;
 
                 default:

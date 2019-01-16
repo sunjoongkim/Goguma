@@ -1,14 +1,12 @@
-package com.wowls.bottari.ui.store;
+package com.wowls.bottari.ui.etc.etc;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.Button;
 
 import com.wowls.bottari.R;
-import com.wowls.bottari.ui.MainActivity;
 
 
-public class GuideLoginView
+public class EtcView
 {
     public final static String LOG = "Goguma";
 
@@ -16,16 +14,12 @@ public class GuideLoginView
 
     private View mMyView;
 
-    private Button mBtnMoveLoginView;
 
 
-    public GuideLoginView(Context context, View view)
+    public EtcView(Context context, View view)
     {
         mContext = context;
         mMyView = view;
-
-        mBtnMoveLoginView = (Button) view.findViewById(R.id.btn_login);
-        mBtnMoveLoginView.setOnClickListener(mOnClickListener);
     }
 
     public void setVisible(boolean visible)
@@ -41,7 +35,6 @@ public class GuideLoginView
             switch (view.getId())
             {
                 case R.id.btn_login:
-                    MainActivity.selectTab(2);
                     break;
 
                 default:

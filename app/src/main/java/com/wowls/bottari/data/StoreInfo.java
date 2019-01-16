@@ -5,12 +5,13 @@ import com.nhn.android.maps.maplib.NGeoPoint;
 public class StoreInfo
 {
     private String mStoreName;
-    private String mLongitude;
-    private String mLatitude;
+    private double mLongitude;
+    private double mLatitude;
     private String mStoreId;
     private double mStoreDistance;
+    private String mStoreAddress;
 
-    public StoreInfo(String name, String lon, String lat, String storeId)
+    public StoreInfo(String name, double lon, double lat, String storeId)
     {
         mStoreName = name;
         mLongitude = lon;
@@ -23,12 +24,12 @@ public class StoreInfo
         return mStoreName;
     }
 
-    public String getLongitude()
+    public double getLongitude()
     {
         return mLongitude;
     }
 
-    public String getLatitude()
+    public double getLatitude()
     {
         return mLatitude;
     }
@@ -40,11 +41,22 @@ public class StoreInfo
 
     public void setDistance(NGeoPoint srcPoint)
     {
-        mStoreDistance = NGeoPoint.getDistance(srcPoint, new NGeoPoint(Double.parseDouble(mLongitude), Double.parseDouble(mLatitude)));
+        mStoreDistance = NGeoPoint.getDistance(srcPoint, new NGeoPoint(mLongitude, mLatitude));
     }
 
     public double getDistance()
     {
         return mStoreDistance;
     }
+
+    public void setStoreAddress(String address)
+    {
+        mStoreAddress = address;
+    }
+
+    public String getStoreAddress()
+    {
+        return mStoreAddress;
+    }
+
 }

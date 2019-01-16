@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A0FFF3">
+
+    <TextView
+        android:id="@+id/text_provision"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:padding="10dp"
+        android:gravity="top|left"
+        android:textColor="#363636"
+        android:text="회원가입 약관"
+        android:background="@drawable/edittext_desc"
+        />
+
+    <CheckBox
+        android:id="@+id/check_provision"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:textColor="#363636"
+        android:text="상기 약관에 동의합니다."
+        android:layout_below="@+id/text_provision"
+        />
+
+    <Button
+        android:id="@+id/btn_regist_email"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="이메일로 가입하기"
+        android:layout_below="@id/check_provision"
+        />
+
+    <Button
+        android:id="@+id/btn_regist_naver"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="네이버로 가입하기"
+        android:layout_below="@id/btn_regist_email"
+        />
+
+    <Button
+        android:id="@+id/btn_regist_kakao"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="카카오로 가입하기"
+        android:layout_below="@id/btn_regist_naver"
+        />
+
+    <Button
+        android:id="@+id/btn_regist_facebook"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="페이스북으로 가입하기"
+        android:layout_below="@id/btn_regist_kakao"
+        />
+
+</RelativeLayout>

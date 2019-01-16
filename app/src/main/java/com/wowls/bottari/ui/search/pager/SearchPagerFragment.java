@@ -1,6 +1,7 @@
 package com.wowls.bottari.ui.search.pager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,12 +17,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.nhn.android.maps.maplib.NGeoPoint;
 import com.wowls.bottari.R;
 import com.wowls.bottari.data.StoreInfo;
 import com.wowls.bottari.define.Define;
 import com.wowls.bottari.retrofit.RetrofitService;
 import com.wowls.bottari.service.GogumaService;
+import com.wowls.bottari.ui.search.info.SearchInfoActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +52,9 @@ public class SearchPagerFragment extends Fragment
     private TextView mTextStoreDistance;
     private ImageView mImageStore;
     private TextView mTextStoreMenu;
+
+    private String mCurrentStoreInfo;
+    private String mCurrentStoreDistance;
 
     private static ArrayList<StoreInfo> mPageViewStoreInfo;
 
@@ -88,6 +92,7 @@ public class SearchPagerFragment extends Fragment
         FrameLayout layout = (FrameLayout) inflater.inflate(R.layout.search_main_view_pager, container, false);
 
         mViewPager = (SearchPagerLayout) layout.findViewById(R.id.pager_layout);
+        mViewPager.setOnClickListener(mOnClickListener);
 
         mTextStoreName = (TextView) layout.findViewById(R.id.text_store_name);
         mTextStoreState = (TextView) layout.findViewById(R.id.text_store_state);
@@ -144,6 +149,7 @@ public class SearchPagerFragment extends Fragment
                     try {
                         String json = response.body().string();
                         Log.i(LOG, "=====================> getStoreInfo : " + json);
+                        mCurrentStoreInfo = json;
                         storeParser(json);
                     }
                     catch (IOException e) {
@@ -177,7 +183,7 @@ public class SearchPagerFragment extends Fragment
         }
 
         mTextStoreDistance.setText(distance);
-
+        mCurrentStoreDistance = distance;
     }
 
     public void storeParser(String json)
@@ -248,6 +254,18 @@ public class SearchPagerFragment extends Fragment
 
         Log.i(LOG, "=========> mTextStoreMenu : " + mTextStoreMenu.getText());
     }
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            Intent intent = new Intent(getActivity(), SearchInfoActivity.class);
+            intent.putExtra("store_info", mCurrentStoreInfo);
+            intent.putExtra("store_distance", mCurrentStoreDistance);
+            getContext().startActivity(intent);
+        }
+    };
 
 //    public void updateThumbnail(int position)
 //    {

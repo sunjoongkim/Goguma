@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#A0FFF3">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="#363636"
+        android:text="회원 가입"
+        android:background="#999999"
+        />
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/bg_back"/>
+
+    <com.wowls.bottari.adapter.SwipeViewPager
+        android:id="@+id/view_pager_regist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"/>
+
+    <com.wowls.bottari.ui.custom.PageIndicator
+        android:id="@+id/page_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="40dp"
+        app:strokeWidth="20dp"
+        app:lineWidth="40dp"
+        app:gapWidth="20dp"
+        app:unselectedColor="#888888"
+        app:selectedColor="#BC0000"
+        />
+
+</FrameLayout>

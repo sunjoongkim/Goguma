@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.wowls.bottari.R;
 import com.wowls.bottari.adapter.MainPagerAdapter;
+import com.wowls.bottari.ui.etc.EtcFragment;
 
 public class MainActivity extends FragmentActivity
 {
@@ -39,6 +40,15 @@ public class MainActivity extends FragmentActivity
         mTabLayout.getTabAt(TAB_SEARCH).select();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        if(mTabLayout.getSelectedTabPosition() == TAB_SEARCH)
+            super.onBackPressed();
+        else
+            mTabLayout.getTabAt(TAB_SEARCH).select();
+    }
+
     private TabLayout.OnTabSelectedListener mOnTabSelectedListener = new TabLayout.OnTabSelectedListener()
     {
         @Override
@@ -48,11 +58,14 @@ public class MainActivity extends FragmentActivity
             switch (tab.getPosition())
             {
                 case TAB_STORE:
-                    mMainHandler.sendEmptyMessageDelayed(MSG_INIT_STORE_MAP, 0);
                     break;
 
                 case TAB_SEARCH:
-                    mMainHandler.sendEmptyMessageDelayed(MSG_INIT_SEARCH_MAP, 0);
+                    break;
+
+                case TAB_ETC:
+                    if(EtcFragment.getFragment() != null)
+                        EtcFragment.getFragment().checkLogin();
                     break;
             }
         }
