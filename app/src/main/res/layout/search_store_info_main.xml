@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#FFFFFF">
 
     <TextView
@@ -27,36 +26,66 @@
         android:layout_marginLeft="10dp"
         android:background="@drawable/bg_back"/>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager_store_image"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="60dp"/>
-
-    <com.wowls.bottari.ui.custom.PageIndicator
-        android:id="@+id/page_indicator_store_image"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_marginTop="270dp"
-        app:strokeWidth="20dp"
-        app:lineWidth="20dp"
-        app:gapWidth="20dp"
-        app:unselectedColor="#888888"
-        app:selectedColor="#BC0000"
-        />
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout_store_info"
-        android:layout_height="50dp"
-        android:layout_width="match_parent"
-        android:layout_marginTop="290dp"
-        app:tabTextColor="#363636"
-        android:background="#DFDFDF"/>
-
-    <com.wowls.bottari.adapter.SwipeViewPager
-        android:id="@+id/view_pager_store_info"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="340dp"/>
+        android:layout_marginTop="50dp">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed">
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/view_pager_store_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"/>
+
+                <com.wowls.boddari.ui.custom.PageIndicator
+                    android:id="@+id/page_indicator_store_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginTop="190dp"
+                    app:strokeWidth="20dp"
+                    app:lineWidth="5dp"
+                    app:gapWidth="5dp"
+                    app:unselectedColor="#888888"
+                    app:selectedColor="#BC0000"
+                    />
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout_store_info"
+                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:background="#DFDFDF"
+                app:tabTextColor="#363636"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager_store_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_review"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_gravity="bottom|right"
+            android:src="@drawable/ico_review"
+            android:visibility="invisible"/>
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </FrameLayout>

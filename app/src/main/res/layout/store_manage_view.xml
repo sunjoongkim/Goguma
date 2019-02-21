@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
+    <ToggleButton
         android:id="@+id/btn_manage_open"
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -13,10 +14,12 @@
         android:gravity="center"
         android:textSize="26sp"
         android:textColor="#FFFFFF"
-        android:text="영업 종료하기"
+        android:textOn="영업 시작"
+        android:textOff="영업 종료"
         />
 
     <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="100dp"
@@ -43,7 +46,7 @@
                 android:id="@+id/map_view"
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="40dp"
                 android:layout_below="@+id/text_manage_store_name">
 
             </RelativeLayout>
@@ -59,6 +62,13 @@
                 android:text="등록"
                 android:layout_below="@+id/map_view"/>
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager_store_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="30dp"
+                android:layout_below="@id/btn_enter"/>
+
             <EditText
                 android:id="@+id/edit_manage_store_desc"
                 android:layout_width="match_parent"
@@ -71,7 +81,7 @@
                 android:textColorHint="#999999"
                 android:hint="상세 설명을 작성해주세요."
                 android:background="@drawable/edittext_desc"
-                android:layout_below="@+id/btn_enter"/>
+                android:layout_below="@+id/view_pager_store_image"/>
 
             <TextView
                 android:id="@+id/text_menu_list"

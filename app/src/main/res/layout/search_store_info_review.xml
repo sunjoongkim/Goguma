@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:id="@+id/text_store_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="#363636"
+        android:background="#999999"
+        />
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/bg_back"/>
+
+    <TextView
+        android:id="@+id/btn_complete"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="15dp"
+        android:layout_gravity="right"
+        android:gravity="center_vertical|right"
+        android:textColor="#FFF000"
+        android:textSize="18dp"
+        android:text="완료"/>
+
+    <com.iarcuschin.simpleratingbar.SimpleRatingBar
+        android:id="@+id/rating_bar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_gravity="center_horizontal"
+        app:srb_starSize="40dp"
+        app:srb_numberOfStars="5"
+        app:srb_borderColor="#000000"
+        app:srb_fillColor="#FFF000"
+        app:srb_stepSize="1"
+        app:srb_rating="4"/>
+
+    <EditText
+        android:id="@+id/edit_review"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="120dp"
+        android:padding="15dp"
+        android:gravity="top|left"
+        android:hint="별점 선택후 리뷰를 작성해주세요"
+        android:textColorHint="#999999"
+        android:textColor="#000000"
+        android:background="@null"/>
+
+</FrameLayout>

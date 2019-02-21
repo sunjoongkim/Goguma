@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/store_info_2_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DFDFDF">
+    android:scrollbars="vertical"
+    android:background="#DFDFDF"
+    app:layoutManager="android.support.v7.widget.LinearLayoutManager">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:textColor="#363636"
-            android:textSize="20sp"
-            android:text="리뷰 화면"
-            />
-
-    </RelativeLayout>
-
-</ScrollView>
+</android.support.v7.widget.RecyclerView>

@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.wowls.bottari"
-        minSdkVersion 19
+        applicationId "com.wowls.boddari"
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -14,6 +14,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi-v7a', 'armeabi'
+            universalApk false
         }
     }
 }
@@ -33,9 +41,18 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     implementation 'org.java-websocket:Java-WebSocket:1.3.6'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+    // map
     implementation files('libs/libDaumMapAndroid.jar')
+    implementation 'com.naver.maps:map-sdk:3.1.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    // login
+    implementation 'com.kakao.sdk:usermgmt:1.16.0'
 
-    implementation 'com.naver.maps.open:naver-map-ncp-api:2.1.7'
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
+    //rating bar
+    implementation 'com.iarcuschin:simpleratingbar:0.1.0'
 }

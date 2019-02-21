@@ -55,11 +55,11 @@
         android:visibility="invisible"/>
 
     <include
-        android:id="@+id/user_login_view"
+        android:id="@+id/etc_guide_login_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
-        layout="@layout/etc_user_login_view"
+        layout="@layout/etc_guide_login_view"
         android:visibility="invisible"/>
 
     <include

@@ -26,13 +26,13 @@
         android:layout_marginLeft="10dp"
         android:background="@drawable/bg_back"/>
 
-    <com.wowls.bottari.adapter.SwipeViewPager
+    <com.wowls.boddari.adapter.SwipeViewPager
         android:id="@+id/view_pager_regist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"/>
 
-    <com.wowls.bottari.ui.custom.PageIndicator
+    <com.wowls.boddari.ui.custom.PageIndicator
         android:id="@+id/page_indicator"
         android:layout_width="match_parent"
         android:layout_height="5dp"

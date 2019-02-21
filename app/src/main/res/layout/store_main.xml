@@ -17,14 +17,14 @@
         android:id="@+id/guide_open_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/guide_open_view"
+        layout="@layout/store_guide_open_view"
         android:visibility="invisible"/>
 
     <include
         android:id="@+id/guide_login_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/guide_login_view"
+        layout="@layout/store_guide_login_view"
         android:visibility="invisible"/>
 
 </FrameLayout>

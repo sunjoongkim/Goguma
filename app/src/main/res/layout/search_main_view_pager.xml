@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.wowls.bottari.ui.search.pager.SearchPagerLayout
+<com.wowls.boddari.ui.search.pager.SearchPagerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pager_layout"
     android:layout_width="match_parent"
@@ -82,4 +82,4 @@
 
     </FrameLayout>
 
-</com.wowls.bottari.ui.search.pager.SearchPagerLayout>
+</com.wowls.boddari.ui.search.pager.SearchPagerLayout>
