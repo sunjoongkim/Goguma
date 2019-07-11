@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.MainActivity"
+        <activity android:name=".ui.search.SearchActivity"
             android:launchMode="singleTask"/>
         <activity android:name=".ui.store.open.OpenStoreActivity"/>
         <activity android:name=".ui.etc.user.regist.EtcUserRegistActivity"/>

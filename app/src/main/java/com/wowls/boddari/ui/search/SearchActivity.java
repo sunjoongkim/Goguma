@@ -2,22 +2,22 @@ package com.wowls.boddari.ui.search;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PointF;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,13 +40,13 @@ import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
 import com.wowls.boddari.R;
-import com.wowls.boddari.ui.search.adapter.SearchListAdapter;
-import com.wowls.boddari.ui.search.adapter.SearchPagerAdapter;
 import com.wowls.boddari.data.StoreInfo;
 import com.wowls.boddari.define.Define;
 import com.wowls.boddari.retrofit.RetrofitService;
 import com.wowls.boddari.service.GogumaService;
 import com.wowls.boddari.ui.custom.RemoveScrollNMapView;
+import com.wowls.boddari.ui.search.adapter.SearchListAdapter;
+import com.wowls.boddari.ui.search.adapter.SearchPagerAdapter;
 
 import net.daum.mf.map.api.MapView;
 
@@ -61,20 +61,19 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SearchFragment extends Fragment
+public class SearchActivity extends AppCompatActivity
 {
-    private static final String LOG = "Goguma";
+    public final static String LOG = "Goguma";
+
+    private LocationManager mLocationManager;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private static final int DEFAULT_ZOOM_LEVEL = 15;
 
     private NaverMap mNaverMap;
 
-    private static SearchFragment mMyFragment;
     private GogumaService mService;
-    private FragmentManager mFragmentManager;
 
-    private Context mContext;
     private FusedLocationSource mLocationSource;
     private RemoveScrollNMapView mMapView;
     private LocationOverlay mLocationOverlay;
@@ -104,108 +103,41 @@ public class SearchFragment extends Fragment
     private Location mCurrentPoint;
 
 
-    public static SearchFragment getInstance()
-    {
-        Bundle args = new Bundle();
-
-        SearchFragment fragment = new SearchFragment();
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    public static SearchFragment getFragment()
-    {
-        return mMyFragment;
-    }
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
+    protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.e(LOG, "==========================> SearchFragment onCreate");
+        setContentView(R.layout.search_main);
 
-        mMyFragment = this;
+        Log.i(LOG, "=====================> CustomGalleryActivity onCreate ");
         mService = GogumaService.getService();
-        mContext = getContext();
-    }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-    {
-        Log.e(LOG, "==========================> SearchFragment onCreateView");
-        View view = inflater.inflate(R.layout.search_main, container, false);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        checkGpsState();
 
         initRetrofit();
         mLocationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
-        mFragmentManager = getFragmentManager();
 
-        mMapView = (RemoveScrollNMapView) view.findViewById(R.id.mapView);
+        mMapView = (RemoveScrollNMapView) findViewById(R.id.mapView);
 
-        mEditKeyword = (EditText) view.findViewById(R.id.edit_keyword);
-        mBtnSearchMode = (ImageView) view.findViewById(R.id.btn_search_mode);
+        mEditKeyword = (EditText) findViewById(R.id.edit_keyword);
+        mBtnSearchMode = (ImageView) findViewById(R.id.btn_search_mode);
         mBtnSearchMode.setOnClickListener(mOnClickListener);
 
-        mBtnSearch = (ImageView) view.findViewById(R.id.btn_search);
+        mBtnSearch = (ImageView) findViewById(R.id.btn_search);
         mBtnSearch.setOnClickListener(mOnClickListener);
-        mSearchViewPager = (ViewPager) view.findViewById(R.id.search_view_pager);
-        mListView = (RecyclerView) view.findViewById(R.id.search_list_view);
+        mSearchViewPager = (ViewPager) findViewById(R.id.search_view_pager);
+        mListView = (RecyclerView) findViewById(R.id.search_list_view);
         mListView.setHasFixedSize(true);
 
         initMap();
-
-        return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    protected void onDestroy()
     {
-        super.onActivityCreated(savedInstanceState);
-        mMapView.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        mMapView.onStart();
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        mMapView.onResume();
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        mMapView.onPause();
-    }
-
-    @Override
-    public void onStop()
-    {
-        mMapView.onStop();
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView()
-    {
-        Log.e(LOG, "=====================> SearchFragment onDestroyView ");
-        mMapView.onDestroy();
-        mMyFragment = null;
+        Log.i(LOG, "=====================> CustomGalleryActivity onDestroy ");
         mLocationSource = null;
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy()
-    {
         super.onDestroy();
     }
 
@@ -215,6 +147,18 @@ public class SearchFragment extends Fragment
         if(mLocationSource.onRequestPermissionsResult(requestCode, permissions, grantResults))
             return;
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    // GPS on/off 체크
+    private void checkGpsState()
+    {
+        if(!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 
     public void initMap()
@@ -244,7 +188,7 @@ public class SearchFragment extends Fragment
     {
         Log.i(LOG, "===========================> initPagerView : " + mCurrentPoint);
         Log.e(LOG, "===========================> initPagerView mStoreList : " + mStoreList);
-        mPagerAdapter = new SearchPagerAdapter(this, mFragmentManager, mStoreList);
+        mPagerAdapter = new SearchPagerAdapter(this, getSupportFragmentManager(), mStoreList);
         mSearchViewPager.setAdapter(mPagerAdapter);
         mSearchViewPager.setOnPageChangeListener(mPagerAdapter);
         mPagerAdapter.notifyDataSetChanged();
@@ -278,7 +222,7 @@ public class SearchFragment extends Fragment
     {
         Log.e(LOG, "====================> initListAdapter");
 
-        mListAdapter = new SearchListAdapter(mStoreList, mContext, mRetrofitService);
+        mListAdapter = new SearchListAdapter(mStoreList, this, mRetrofitService);
         mListView.setAdapter(mListAdapter);
     }
 
@@ -326,20 +270,20 @@ public class SearchFragment extends Fragment
         }
     };
 
-//    private NMapActivity.OnDataProviderListener mOnDataProviderListener = new NMapActivity.OnDataProviderListener()
-//    {
-//        @Override
-//        public void onReverseGeocoderResponse(NMapPlacemark nMapPlacemark, NMapError nMapError)
-//        {
-//            if(nMapError == null && nMapPlacemark != null)
-//            {
-//                Intent broadcast = new Intent();0
-//                broadcast.setAction("action_store_address");
-//                broadcast.putExtra("store_address", nMapPlacemark.toString());
-//                mContext.sendBroadcast(broadcast);
-//            }
-//        }
-//    };
+    //    private NMapActivity.OnDataProviderListener mOnDataProviderListener = new NMapActivity.OnDataProviderListener()
+    //    {
+    //        @Override
+    //        public void onReverseGeocoderResponse(NMapPlacemark nMapPlacemark, NMapError nMapError)
+    //        {
+    //            if(nMapError == null && nMapPlacemark != null)
+    //            {
+    //                Intent broadcast = new Intent();0
+    //                broadcast.setAction("action_store_address");
+    //                broadcast.putExtra("store_address", nMapPlacemark.toString());
+    //                mContext.sendBroadcast(broadcast);
+    //            }
+    //        }
+    //    };
 
     private void initMapSetting(@NonNull NaverMap naverMap)
     {
@@ -404,7 +348,7 @@ public class SearchFragment extends Fragment
 
     private void retryDialog(String comment)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(comment)
                 .setNegativeButton("다시 시도", null)
                 .create()
@@ -487,8 +431,8 @@ public class SearchFragment extends Fragment
 
     public void getStoreAddress(double lon, double lat)
     {
-//        if(mMapContext != null)
-//            mMapContext.findPlacemarkAtLocation(lon, lat);
+        //        if(mMapContext != null)
+        //            mMapContext.findPlacemarkAtLocation(lon, lat);
     }
 
     private void addStoreMarker()
@@ -575,7 +519,7 @@ public class SearchFragment extends Fragment
 
     private void initEditText()
     {
-        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEditKeyword.getWindowToken(), 0);
 
         mEditKeyword.setText("");

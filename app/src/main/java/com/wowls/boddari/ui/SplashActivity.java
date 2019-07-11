@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.wowls.boddari.R;
 import com.wowls.boddari.service.GogumaService;
+import com.wowls.boddari.ui.search.SearchActivity;
 
 
 public class SplashActivity extends Activity
@@ -115,7 +116,7 @@ public class SplashActivity extends Activity
 
     private void startMainActivity()
     {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
 
         finish();

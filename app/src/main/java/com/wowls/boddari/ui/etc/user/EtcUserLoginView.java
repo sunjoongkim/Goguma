@@ -23,7 +23,7 @@ import com.wowls.boddari.define.ConnectionState;
 import com.wowls.boddari.define.Define;
 import com.wowls.boddari.retrofit.RetrofitService;
 import com.wowls.boddari.service.GogumaService;
-import com.wowls.boddari.ui.etc.EtcFragment;
+import com.wowls.boddari.ui.etc.EtcActivity;
 import com.wowls.boddari.ui.etc.user.regist.EtcUserRegistActivity;
 
 import java.io.IOException;
@@ -187,7 +187,7 @@ public class EtcUserLoginView
                                 mService.setConnectionState(ConnectionState.LOGON, userId, mUserName, "");
                                 checkExistStore();
 
-                                mHandler.sendEmptyMessage(EtcFragment.MSG_SUCCESS_LOGIN);
+                                mHandler.sendEmptyMessage(EtcActivity.MSG_SUCCESS_LOGIN);
                                 setVisible(false);
                             }
                         }

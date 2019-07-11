@@ -15,13 +15,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.wowls.boddari.R;
-import com.wowls.boddari.ui.store.adapter.OpenPagerAdapter;
 import com.wowls.boddari.adapter.SwipeViewPager;
 import com.wowls.boddari.data.MenuInfo;
 import com.wowls.boddari.define.Define;
 import com.wowls.boddari.retrofit.RetrofitService;
 import com.wowls.boddari.service.GogumaService;
-import com.wowls.boddari.ui.store.StoreFragment;
+import com.wowls.boddari.ui.store.adapter.OpenPagerAdapter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -92,8 +91,8 @@ public class OpenStoreActivity extends FragmentActivity
     @Override
     protected void onDestroy()
     {
-        if(StoreFragment.getFragment() != null)
-            StoreFragment.getFragment().initMap();
+//        if(StoreActivity.getFragment() != null)
+//            StoreActivity.getFragment().initMap();
 
         super.onDestroy();
     }

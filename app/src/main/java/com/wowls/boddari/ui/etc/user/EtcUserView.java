@@ -19,8 +19,7 @@ import com.wowls.boddari.R;
 import com.wowls.boddari.define.ConnectionState;
 import com.wowls.boddari.retrofit.RetrofitService;
 import com.wowls.boddari.service.GogumaService;
-import com.wowls.boddari.ui.MainActivity;
-import com.wowls.boddari.ui.etc.EtcFragment;
+import com.wowls.boddari.ui.etc.EtcActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +31,7 @@ public class EtcUserView
     public final static String LOG = "Goguma";
 
     private Context mContext;
+    private EtcActivity mActivity;
 
     private View mMyView;
     private GogumaService mService;
@@ -50,9 +50,10 @@ public class EtcUserView
     private Handler mHandler;
 
 
-    public EtcUserView(Context context, View view, Handler handler)
+    public EtcUserView(Context context, EtcActivity activity, View view, Handler handler)
     {
         mContext = context;
+        mActivity = activity;
         mMyView = view;
         mHandler = handler;
         mService = GogumaService.getService();
@@ -143,11 +144,11 @@ public class EtcUserView
                     if(mService != null)
                     {
                         mService.setConnectionState(ConnectionState.LOGOFF, "", "", "");
-                        MainActivity.selectTab(1);
+                        mActivity.finish();
                     }
 
                     UserManagement.getInstance().requestLogout(mLogoutCallback);
-                    mHandler.sendEmptyMessage(EtcFragment.MSG_SUCCESS_LOGIN);
+                    mHandler.sendEmptyMessage(EtcActivity.MSG_SUCCESS_LOGIN);
                     break;
 
                 default:

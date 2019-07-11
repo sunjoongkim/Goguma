@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.wowls.boddari.R;
 import com.wowls.boddari.data.StoreInfo;
 import com.wowls.boddari.define.Define;
-import com.wowls.boddari.ui.search.SearchFragment;
+import com.wowls.boddari.ui.search.SearchActivity;
 import com.wowls.boddari.ui.search.pager.SearchPagerFragment;
 import com.wowls.boddari.ui.search.pager.SearchPagerLayout;
 
@@ -26,7 +26,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter implements ViewPage
     private final static int PAGE_SCROLL_STATE_START = 1;
     private final static int PAGE_SCROLL_STATE_SCROLL = 2;
 
-    private SearchFragment mSearchFragment;
+    private SearchActivity mMainActivity;
     private FragmentManager mFragmentManager;
     private ArrayList<StoreInfo> mStoreList;
     private int mPageCount;
@@ -35,12 +35,12 @@ public class SearchPagerAdapter extends FragmentPagerAdapter implements ViewPage
 
     private int mCountDir = 0;
 
-    public SearchPagerAdapter(SearchFragment fragment, FragmentManager manager, ArrayList<StoreInfo> list)
+    public SearchPagerAdapter(SearchActivity activity, FragmentManager manager, ArrayList<StoreInfo> list)
     {
         super(manager);
 
         Log.e(LOG, "==========================> SearchPagerAdapter list : " + list);
-        mSearchFragment = fragment;
+        mMainActivity = activity;
         mFragmentManager = manager;
         mStoreList = list;
 
@@ -70,7 +70,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter implements ViewPage
             e.printStackTrace();
         }
 
-        return SearchPagerFragment.getInstance(mSearchFragment.getContext(), position, mScale);
+        return SearchPagerFragment.getInstance(mMainActivity.getApplicationContext(), position, mScale);
     }
 
     @Override
@@ -97,12 +97,12 @@ public class SearchPagerAdapter extends FragmentPagerAdapter implements ViewPage
                 current.setScaleBoth(Define.BIG_SCALE - Define.DIFF_SCALE * positionOffset);
 //                current.setAlpha(0.5f);
 
-//                mSearchFragment.setEnableOutline(false);
+//                mMainActivity.setEnableOutline(false);
 
                 if(positionOffset == 0f && positionOffsetPixels == 0)
                 {
 //                    current.setAlpha(1.0f);
-//                    mSearchFragment.setEnableOutline(true);
+//                    mMainActivity.setEnableOutline(true);
                 }
 
                 if(mPageCount - 1 >= position + 1)
@@ -133,7 +133,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter implements ViewPage
 //        Log.e(LOG, "onPageSelected mIsSelectionByUser : " + mIsSelectionByUser);
 
         if(mIsSelectionByUser)
-            mSearchFragment.onPageSelected(position);
+            mMainActivity.onPageSelected(position);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter implements ViewPage
 
     private String getFragmentTag(int position)
     {
-        return "android:switcher:" + mSearchFragment.getViewPager().getId() + ":" + position;
+        return "android:switcher:" + mMainActivity.getViewPager().getId() + ":" + position;
     }
 
 }

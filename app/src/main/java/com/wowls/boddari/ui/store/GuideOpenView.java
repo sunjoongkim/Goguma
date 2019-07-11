@@ -42,8 +42,8 @@ public class GuideOpenView
             switch (view.getId())
             {
                 case R.id.btn_open:
-                    if(StoreFragment.getFragment() != null)
-                        StoreFragment.getFragment().finishMap();
+//                    if(StoreActivity.getFragment() != null)
+//                        StoreActivity.getFragment().finishMap();
 
                     Intent intent = new Intent(mContext, OpenStoreActivity.class);
                     mContext.startActivity(intent);

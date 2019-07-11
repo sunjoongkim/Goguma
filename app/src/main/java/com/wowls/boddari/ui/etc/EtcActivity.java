@@ -1,17 +1,13 @@
 package com.wowls.boddari.ui.etc;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wowls.boddari.R;
@@ -21,17 +17,10 @@ import com.wowls.boddari.ui.etc.setting.EtcSettingView;
 import com.wowls.boddari.ui.etc.user.EtcUserView;
 import com.wowls.boddari.ui.store.GuideLoginView;
 
-public class EtcFragment extends Fragment
+public class EtcActivity extends AppCompatActivity
 {
     private static final String LOG = "Goguma";
 
-    private static final int TAB_USER = 0;
-    private static final int TAB_SETTING = 1;
-    private static final int TAB_ETC = 2;
-
-    private static EtcFragment mMyFragment;
-
-    private Context mContext;
     private GogumaService mService;
 
     private TextView mBtnUser, mBtnSetting, mBtnEtc;
@@ -41,47 +30,30 @@ public class EtcFragment extends Fragment
     private EtcUserView mEtcUserView;
     private GuideLoginView mGuideLoginView;
 
-    public static EtcFragment getInstance()
-    {
-        Bundle args = new Bundle();
 
-        EtcFragment fragment = new EtcFragment();
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    public static EtcFragment getFragment()
-    {
-        return mMyFragment;
-    }
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    protected void onCreate(@Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.etc_main, container, false);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.etc_main);
 
-        mContext = getContext();
         mService = GogumaService.getService();
 
-        mBtnUser = (TextView) view.findViewById(R.id.tab_user);
+        mBtnUser = (TextView) findViewById(R.id.tab_user);
         mBtnUser.setOnClickListener(mOnClickListener);
         mBtnUser.setBackgroundColor(Color.parseColor("#A0FFF3"));
 
-        mBtnSetting = (TextView) view.findViewById(R.id.tab_setting);
+        mBtnSetting = (TextView) findViewById(R.id.tab_setting);
         mBtnSetting.setOnClickListener(mOnClickListener);
-        mBtnEtc = (TextView) view.findViewById(R.id.tab_etc);
+        mBtnEtc = (TextView) findViewById(R.id.tab_etc);
         mBtnEtc.setOnClickListener(mOnClickListener);
 
-        mEtcUserView = new EtcUserView(mContext, view.findViewById(R.id.etc_user_view), mUserHandler);
+        mEtcUserView = new EtcUserView(this, this, findViewById(R.id.etc_user_view), mUserHandler);
         mEtcUserView.setVisible(true);
-        mGuideLoginView = new GuideLoginView(mContext, view.findViewById(R.id.etc_guide_login_view));
+        mGuideLoginView = new GuideLoginView(this, findViewById(R.id.etc_guide_login_view));
 
-        mEtcSettingView = new EtcSettingView(mContext, view.findViewById(R.id.etc_setting_view));
-        mEtcView = new EtcView(mContext, view.findViewById(R.id.etc_3_view));
-
-        return view;
+        mEtcSettingView = new EtcSettingView(this, findViewById(R.id.etc_setting_view));
+        mEtcView = new EtcView(this, findViewById(R.id.etc_3_view));
     }
 
     @Override
@@ -100,7 +72,7 @@ public class EtcFragment extends Fragment
 
     private void retryDialog(String comment)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(comment)
                 .setNegativeButton("다시 시도", null)
                 .create()

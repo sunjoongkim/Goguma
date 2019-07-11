@@ -1,19 +1,14 @@
 package com.wowls.boddari.ui.store;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,12 +32,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class StoreFragment extends Fragment
+public class StoreActivity extends AppCompatActivity
 {
     private static final String LOG = "Goguma";
 
-    private static StoreFragment mMyFragment;
-    private Context mContext;
+    private static StoreActivity mMyFragment;
 
     private GuideLoginView mGuideLoginView;
     private GuideOpenView mGuideOpenView;
@@ -53,47 +47,19 @@ public class StoreFragment extends Fragment
 
     private ArrayList<Bitmap> mImageList = new ArrayList<>();
 
-    public static StoreFragment getInstance()
-    {
-        Bundle args = new Bundle();
-
-        StoreFragment fragment = new StoreFragment();
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
-    public static StoreFragment getFragment()
-    {
-        return mMyFragment;
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-    {
-        Log.e(LOG, "==========================> StoreFragment onCreateView");
-        View view = inflater.inflate(R.layout.store_main, container, false);
-
-        mMyFragment = this;
-
-        initRetrofit();
-        mContext = getContext();
-        mService = GogumaService.getService();
-
-        mGuideLoginView = new GuideLoginView(mContext, view.findViewById(R.id.guide_login_view));
-        mGuideOpenView = new GuideOpenView(mContext, view.findViewById(R.id.guide_open_view));
-        mStoreManagerView = new StoreManagerView(mContext, getChildFragmentManager(), view.findViewById(R.id.store_manage_view), mRetrofitService);
-        mStoreManagerView.setStoreChangeListener(mStoreChangeListener);
-
-        return view;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.e(LOG, "==========================> StoreFragment onCreate");
+        setContentView(R.layout.store_main);
+
+        initRetrofit();
+        mService = GogumaService.getService();
+
+        mGuideLoginView = new GuideLoginView(this, findViewById(R.id.guide_login_view));
+        mGuideOpenView = new GuideOpenView(this, findViewById(R.id.guide_open_view));
+        mStoreManagerView = new StoreManagerView(this, getSupportFragmentManager(), findViewById(R.id.store_manage_view), mRetrofitService);
+        mStoreManagerView.setStoreChangeListener(mStoreChangeListener);
     }
 
     @Override
@@ -106,13 +72,13 @@ public class StoreFragment extends Fragment
     }
 
     @Override
-    public void onDestroyView()
+    public void onDestroy()
     {
-        Log.e(LOG, "=========================> StoreFragment onDestroyView");
+        Log.e(LOG, "=========================> StoreActivity onDestroyView");
         mMyFragment = null;
         mStoreManagerView.setStoreChangeListener(null);
 
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     public void initMap()
@@ -340,7 +306,7 @@ public class StoreFragment extends Fragment
 
     private void retryDialog(String comment)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(comment)
                 .setNegativeButton("다시 시도", null)
                 .create()
