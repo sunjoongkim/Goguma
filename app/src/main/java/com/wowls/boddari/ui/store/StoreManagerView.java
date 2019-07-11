@@ -63,6 +63,7 @@ public class StoreManagerView
     private TextView mTextStoreMenu;
     private Button mBtnRegist;
     private ImageView mBtnAddMenu;
+    private Button mBtnRemove;
 
     private ViewPager mImageViewPager;
 
@@ -97,6 +98,8 @@ public class StoreManagerView
         mBtnRegist.setOnClickListener(mOnClickListener);
         mBtnAddMenu = (ImageView) view.findViewById(R.id.btn_add_menu);
         mBtnAddMenu.setOnClickListener(mOnClickListener);
+        mBtnRemove = (Button) view.findViewById(R.id.btn_remove_store);
+        mBtnRemove.setOnClickListener(mOnClickListener);
 
         initMap();
     }
@@ -307,6 +310,10 @@ public class StoreManagerView
 //
 //                    mEditDialog.dismiss();
 //                    break;
+
+                case R.id.btn_remove_store:
+                    removeDialog();
+                    break;
             }
         }
     };
@@ -394,6 +401,27 @@ public class StoreManagerView
         mListView.setAdapter(mListAdapter);
     }
 
+    private void removeStore()
+    {
+        if(mRetrofitService != null && mService != null)
+        {
+            mRetrofitService.removeOwnStoreInfo(mService.getCurrentUser(), mService.getCurrentUser()).enqueue(new Callback<ResponseBody>()
+            {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
+                {
+                    Log.i(LOG, "removeStore : " + response.body());
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+
+                }
+            });
+        }
+    }
+
     public void registMenu(String name, String price)
     {
         HashMap<String, Object> map = new HashMap<>();
@@ -437,6 +465,29 @@ public class StoreManagerView
         mEditDialog.show();
     }
 
+    private void removeDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage("스토어를 삭제하시겠습니까?")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        removeStore();
+
+                        if(mService != null)
+                            mService.setExistStore(false);
+
+                        if(mStoreChangeListener != null)
+                            mStoreChangeListener.onRemoveStore();
+                    }
+                })
+                .setNegativeButton("취소", null)
+                .create()
+                .show();
+    }
+
     private void retryDialog(String comment)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -444,6 +495,18 @@ public class StoreManagerView
                 .setNegativeButton("다시 시도", null)
                 .create()
                 .show();
+    }
+
+    private StoreChangeListener mStoreChangeListener;
+
+    public void setStoreChangeListener(StoreChangeListener listener)
+    {
+        mStoreChangeListener = listener;
+    }
+
+    public interface StoreChangeListener
+    {
+        void onRemoveStore();
     }
 
     public final static int MSG_SET_TRACKING_MODE = 1000;

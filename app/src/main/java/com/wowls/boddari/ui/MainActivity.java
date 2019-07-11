@@ -105,7 +105,7 @@ public class MainActivity extends FragmentActivity
         @Override
         public void onTabUnselected(TabLayout.Tab tab)
         {
-            Log.i("Goguma", "==============> onTabUnselected : " + tab.getPosition());
+            Log.i("TEST", "==============> onTabUnselected : " + tab.getPosition());
             switch (tab.getPosition())
             {
                 case TAB_STORE:

@@ -84,6 +84,7 @@ public class StoreFragment extends Fragment
         mGuideLoginView = new GuideLoginView(mContext, view.findViewById(R.id.guide_login_view));
         mGuideOpenView = new GuideOpenView(mContext, view.findViewById(R.id.guide_open_view));
         mStoreManagerView = new StoreManagerView(mContext, getChildFragmentManager(), view.findViewById(R.id.store_manage_view), mRetrofitService);
+        mStoreManagerView.setStoreChangeListener(mStoreChangeListener);
 
         return view;
     }
@@ -109,6 +110,8 @@ public class StoreFragment extends Fragment
     {
         Log.e(LOG, "=========================> StoreFragment onDestroyView");
         mMyFragment = null;
+        mStoreManagerView.setStoreChangeListener(null);
+
         super.onDestroyView();
     }
 
@@ -356,6 +359,15 @@ public class StoreFragment extends Fragment
         mGuideOpenView.setVisible(false);
         mStoreManagerView.setVisible(false);
     }
+
+    private StoreManagerView.StoreChangeListener mStoreChangeListener = new StoreManagerView.StoreChangeListener()
+    {
+        @Override
+        public void onRemoveStore()
+        {
+            checkLogin();
+        }
+    };
 
     private GogumaService.LoginListener mLoginListener = new GogumaService.LoginListener()
     {

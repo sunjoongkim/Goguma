@@ -110,10 +110,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginBottom="50dp"
                 android:textSize="18sp"
                 android:textColor="#363636"
                 android:layout_below="@+id/text_menu_list"/>
+
+            <Button
+                android:id="@+id/btn_remove_store"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="50dp"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:text="스토어 삭제"
+                android:layout_below="@+id/text_manage_store_menu"
+                />
 
         </RelativeLayout>
 
