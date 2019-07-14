@@ -35,7 +35,8 @@
         </activity>
 
         <activity android:name=".ui.search.SearchActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.store.open.OpenStoreActivity"/>
         <activity android:name=".ui.etc.user.regist.EtcUserRegistActivity"/>
         <activity android:name=".ui.search.info.SearchInfoActivity"/>

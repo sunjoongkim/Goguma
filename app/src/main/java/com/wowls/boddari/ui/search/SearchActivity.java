@@ -14,13 +14,16 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -43,6 +46,7 @@ import com.wowls.boddari.R;
 import com.wowls.boddari.data.StoreInfo;
 import com.wowls.boddari.define.Define;
 import com.wowls.boddari.retrofit.RetrofitService;
+import com.wowls.boddari.retrofit.ReverseGeoService;
 import com.wowls.boddari.service.GogumaService;
 import com.wowls.boddari.ui.custom.RemoveScrollNMapView;
 import com.wowls.boddari.ui.search.adapter.SearchListAdapter;
@@ -58,6 +62,7 @@ import java.util.Comparator;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -73,6 +78,8 @@ public class SearchActivity extends AppCompatActivity
     private NaverMap mNaverMap;
 
     private GogumaService mService;
+    private RetrofitService mRetrofitService;
+    private ReverseGeoService mReverseGeoService;
 
     private FusedLocationSource mLocationSource;
     private RemoveScrollNMapView mMapView;
@@ -81,12 +88,16 @@ public class SearchActivity extends AppCompatActivity
 
     private Marker mPreSelectedMarker;
 
+    private DrawerLayout mDrawerLayout;
+    private MenuView mMenuView;
+    private SlideView mSlideView;
+
+    private TextView mTextAddress;
     private EditText mEditKeyword;
-    private ImageView mBtnSearchMode;
+    private ImageView mBtnMenu;
     private ImageView mBtnSearch;
 
     private SearchListAdapter mListAdapter;
-    private RetrofitService mRetrofitService;
 
     private ViewPager mSearchViewPager;
     private SearchPagerAdapter mPagerAdapter;
@@ -116,13 +127,19 @@ public class SearchActivity extends AppCompatActivity
         checkGpsState();
 
         initRetrofit();
+        initGeoServiceRetrofit();
         mLocationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
         mMapView = (RemoveScrollNMapView) findViewById(R.id.mapView);
 
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_container);
+        mMenuView = new MenuView(this, findViewById(R.id.view_menu), mMenuItemClickListener);
+        mSlideView = new SlideView(this, findViewById(R.id.view_slide), mSlideViewListener);
+
+        mTextAddress = (TextView) findViewById(R.id.text_address);
         mEditKeyword = (EditText) findViewById(R.id.edit_keyword);
-        mBtnSearchMode = (ImageView) findViewById(R.id.btn_search_mode);
-        mBtnSearchMode.setOnClickListener(mOnClickListener);
+        mBtnMenu = (ImageView) findViewById(R.id.btn_menu);
+        mBtnMenu.setOnClickListener(mOnClickListener);
 
         mBtnSearch = (ImageView) findViewById(R.id.btn_search);
         mBtnSearch.setOnClickListener(mOnClickListener);
@@ -182,6 +199,16 @@ public class SearchActivity extends AppCompatActivity
                 .build();
 
         mRetrofitService = retrofit.create(RetrofitService.class);
+    }
+
+    private void initGeoServiceRetrofit()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(Define.URL_NAVER_API)
+                .build();
+
+        mReverseGeoService = retrofit.create(ReverseGeoService.class);
     }
 
     private void initPagerView()
@@ -254,6 +281,8 @@ public class SearchActivity extends AppCompatActivity
 
             if(mService != null)
                 mService.setCurrentLocation(location.getLatitude(), location.getLongitude());
+
+            getCurrentAddress(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
 
             if(mIsInitMap)
             {
@@ -536,6 +565,24 @@ public class SearchActivity extends AppCompatActivity
         mSearchViewPager.setVisibility(View.VISIBLE);
     }
 
+    private MenuView.MenuItemClickListener mMenuItemClickListener = new MenuView.MenuItemClickListener()
+    {
+        @Override
+        public void onClickItem(Menu item)
+        {
+
+        }
+    };
+
+    private SlideView.SlideViewListener mSlideViewListener = new SlideView.SlideViewListener()
+    {
+        @Override
+        public void onCloseSlide()
+        {
+
+        }
+    };
+
     private View.OnClickListener mOnClickListener = new View.OnClickListener()
     {
         @Override
@@ -543,15 +590,16 @@ public class SearchActivity extends AppCompatActivity
         {
             switch (v.getId())
             {
-                case R.id.btn_search_mode:
-                    mIsListMode = !mIsListMode;
-                    mListView.setVisibility(mIsListMode ? View.VISIBLE : View.INVISIBLE);
+                case R.id.btn_menu:
+//                    mListView.setVisibility(mIsListMode ? View.VISIBLE : View.INVISIBLE);
+//
+//                    if(mIsListMode)
+//                        mBtnMenu.setBackgroundResource(R.drawable.ico_map);
+//                    else
+//                        mBtnMenu.setBackgroundResource(R.drawable.ico_menu);
 
-                    if(mIsListMode)
-                        mBtnSearchMode.setBackgroundResource(R.drawable.ico_map);
-                    else
-                        mBtnSearchMode.setBackgroundResource(R.drawable.ico_menu);
-
+                    View menu = findViewById(R.id.view_menu);
+                    mDrawerLayout.openDrawer(menu);
                     break;
 
                 case R.id.btn_search:
@@ -572,6 +620,87 @@ public class SearchActivity extends AppCompatActivity
 
             return string;
         }
+    }
+
+    private void getCurrentAddress(String lat, String lon)
+    {
+        String coord = lon + "," + lat;
+
+        if(mReverseGeoService != null)
+        {
+            mReverseGeoService.getAddress(coord, "json").enqueue(new Callback<ResponseBody>()
+            {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
+                {
+                    if(response.body() == null)
+                        return;
+                    else
+                    {
+                        try {
+                            String json = response.body().string();
+                            addressParser(json);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t)
+                {
+
+                }
+            });
+        }
+    }
+
+    private void addressParser(String json)
+    {
+        JsonParser parser = new JsonParser();
+
+        String results;
+        JsonElement element = (JsonElement) parser.parse(json);
+        JsonObject object = element.getAsJsonObject();
+        results = object.get("results").toString();
+
+        String region;
+        JsonArray array = (JsonArray) parser.parse(results);
+
+        for(JsonElement element1 : array)
+        {
+            JsonObject object1 = element1.getAsJsonObject();
+            region = object1.get("region").toString();
+
+            String area1;
+            String area2;
+            String area3;
+            JsonElement element2 = (JsonElement) parser.parse(region);
+            JsonObject object2 = element2.getAsJsonObject();
+            area1 = object2.get("area1").toString();
+            area2 = object2.get("area2").toString();
+            area3 = object2.get("area3").toString();
+
+            mTextAddress.setText("");
+
+            areaParser(area1);
+            areaParser(area2);
+            areaParser(area3);
+        }
+    }
+
+    private void areaParser(String json)
+    {
+        JsonParser parser = new JsonParser();
+        JsonElement element = (JsonElement) parser.parse(json);
+
+        String area;
+
+        JsonObject object = element.getAsJsonObject();
+
+        area = object.get("name").toString().replace("\"", "");
+
+        mTextAddress.append(area + " ");
     }
 
     private class GetStoreListTask extends AsyncTask<Void, Void, Void>

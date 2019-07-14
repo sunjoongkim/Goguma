@@ -1,33 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/_204sdp"
+    android:layout_width="@dimen/_174sdp"
     android:layout_height="match_parent"
-    android:layout_gravity="right"
+    android:layout_gravity="left"
     android:clickable="true"
     android:background="#373343">
 
-    <!-- Header -->
-    <ImageView
-        android:id="@+id/btn_header"
-        android:layout_width="@dimen/_98sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_39sdp"
-        android:layout_marginLeft="@dimen/_17sdp"
-        android:background="@drawable/logo"
-        />
-
-    <ImageView
-        android:id="@+id/header_divider"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:background="#2F2B3A"
-        android:layout_below="@id/btn_header"
-        />
-
-    <!-- Flow Diagram -->
     <TextView
         android:id="@+id/text_link_sub"
         android:layout_width="match_parent"
@@ -35,12 +14,9 @@
         android:layout_marginTop="@dimen/_25sdp"
         android:layout_marginLeft="@dimen/_17sdp"
         android:gravity="center_vertical"
-        android:text="@string/link_sub"
+        android:text="계정 정보"
         android:textColor="#9996A2"
         android:textSize="@dimen/_11ssp"
-        fontPath="@string/font_roboto_regular"
-        tools:ignore="MissingPrefix"
-        android:layout_below="@id/header_divider"
         />
 
     <LinearLayout
@@ -53,25 +29,14 @@
         android:orientation="horizontal"
         android:layout_below="@+id/text_link_sub">
 
-        <ImageView
-            android:duplicateParentState="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_flow"
-            />
-
         <TextView
             android:duplicateParentState="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_8sdp"
             android:gravity="center_vertical"
-            android:text="@string/link"
-            android:textColor="@color/menu_selector"
+            android:text="리뷰 관리"
             android:textSize="@dimen/_15ssp"
-            fontPath="@string/font_roboto_bold"
-            tools:ignore="MissingPrefix"
             />
 
     </LinearLayout>
@@ -85,11 +50,9 @@
         android:layout_marginTop="@dimen/_37sdp"
         android:layout_marginLeft="@dimen/_17sdp"
         android:gravity="center_vertical"
-        android:text="@string/learn_sub"
+        android:text="게시판"
         android:textColor="#9996A2"
         android:textSize="@dimen/_11ssp"
-        fontPath="@string/font_roboto_regular"
-        tools:ignore="MissingPrefix"
         android:layout_below="@id/btn_link"
         />
 
@@ -103,25 +66,14 @@
         android:orientation="horizontal"
         android:layout_below="@+id/text_learn_sub">
 
-        <ImageView
-            android:duplicateParentState="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_learn"
-            />
-
         <TextView
             android:duplicateParentState="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_8sdp"
             android:gravity="center_vertical"
-            android:text="@string/learn"
-            android:textColor="@color/menu_selector"
+            android:text="공지사항"
             android:textSize="@dimen/_15ssp"
-            fontPath="@string/font_roboto_bold"
-            tools:ignore="MissingPrefix"
             />
 
     </LinearLayout>
@@ -136,25 +88,14 @@
         android:orientation="horizontal"
         android:layout_below="@+id/btn_learn">
 
-        <ImageView
-            android:duplicateParentState="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_modeling"
-            />
-
         <TextView
             android:duplicateParentState="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_8sdp"
             android:gravity="center_vertical"
-            android:text="@string/model"
-            android:textColor="@color/menu_selector"
+            android:text="이벤트"
             android:textSize="@dimen/_15ssp"
-            fontPath="@string/font_roboto_bold"
-            tools:ignore="MissingPrefix"
             />
 
     </LinearLayout>
@@ -168,11 +109,9 @@
         android:layout_marginTop="@dimen/_37sdp"
         android:layout_marginLeft="@dimen/_17sdp"
         android:gravity="center_vertical"
-        android:text="@string/recognition_sub"
+        android:text="고객 센터"
         android:textColor="#9996A2"
         android:textSize="@dimen/_11ssp"
-        fontPath="@string/font_roboto_regular"
-        tools:ignore="MissingPrefix"
         android:layout_below="@id/btn_model"
         />
 
@@ -186,25 +125,14 @@
         android:orientation="horizontal"
         android:layout_below="@+id/text_recognition_sub">
 
-        <ImageView
-            android:duplicateParentState="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_recognize"
-            />
-
         <TextView
             android:duplicateParentState="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_8sdp"
             android:gravity="center_vertical"
-            android:text="@string/recognition"
-            android:textColor="@color/menu_selector"
+            android:text="1:1 문의"
             android:textSize="@dimen/_15ssp"
-            fontPath="@string/font_roboto_bold"
-            tools:ignore="MissingPrefix"
             />
 
     </LinearLayout>
@@ -219,25 +147,15 @@
         android:orientation="horizontal"
         android:background="#2F2B3A">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/_17sdp"
-            android:background="@drawable/ic_guide"
-            />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_17sdp"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
-            android:text="@string/guide"
+            android:text="환경 설정"
             android:textColor="#FFFFFF"
             android:textSize="@dimen/_15ssp"
-            fontPath="@string/font_roboto_regular"
-            tools:ignore="MissingPrefix"
             />
 
     </LinearLayout>

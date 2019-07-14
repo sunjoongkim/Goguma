@@ -60,4 +60,7 @@ dependencies {
 
     //rating bar
     implementation 'com.iarcuschin:simpleratingbar:0.1.0'
+
+    // Sliding view
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
 }
