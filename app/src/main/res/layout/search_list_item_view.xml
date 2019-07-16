@@ -8,34 +8,23 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/edittext_desc">
-
-        <ImageView
-            android:id="@+id/image_store"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_margin="5dp"
-            android:background="@drawable/sample_store_image2"/>
+        android:layout_margin="@dimen/_8sdp">
 
         <TextView
             android:id="@+id/text_store_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:textSize="20sp"
             android:textColor="#363636"
             android:text="상점명"
             android:singleLine="true"
             android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:layout_below="@id/image_store"/>
+            android:marqueeRepeatLimit="marquee_forever"/>
 
         <TextView
             android:id="@+id/text_store_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:paddingRight="5dp"
             android:paddingLeft="5dp"
             android:layout_gravity="center_vertical"
@@ -50,12 +39,10 @@
             android:id="@+id/text_store_distance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             android:paddingRight="5dp"
             android:paddingLeft="5dp"
             android:layout_gravity="center_vertical"
-            android:gravity="center"
-            android:textSize="14sp"
+            android:textSize="@dimen/_10ssp"
             android:textColor="#363636"
             android:layout_below="@id/text_store_name"
             android:layout_toRightOf="@id/text_store_state"/>
@@ -63,15 +50,31 @@
         <TextView
             android:id="@+id/text_store_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_16sdp"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_gravity="center_vertical"
             android:gravity="top"
-            android:textSize="16sp"
+            android:textSize="@dimen/_14ssp"
             android:textColor="#363636"
             android:layout_below="@id/text_store_state"/>
+
+        <ImageView
+            android:id="@+id/image_store"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:layout_margin="@dimen/_4sdp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/sample_store_image2"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_7sdp"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@id/image_store"
+            android:background="#E4E8F1"/>
 
     </RelativeLayout>
 

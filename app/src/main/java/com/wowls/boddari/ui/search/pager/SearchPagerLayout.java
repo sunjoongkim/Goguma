@@ -39,6 +39,6 @@ public class SearchPagerLayout extends FrameLayout
         int width = getWidth();
         int height = getHeight();
 
-        canvas.scale(mScale, mScale, width/2, height/2);
+        canvas.scale(mScale, mScale, width/2, height/2 + 20);
     }
 }

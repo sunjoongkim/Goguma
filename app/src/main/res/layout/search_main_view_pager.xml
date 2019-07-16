@@ -7,13 +7,17 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:gravity="center"
+    android:clipChildren="false"
     android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginBottom="@dimen/_3sdp"
+        android:layout_marginLeft="@dimen/_17sdp"
+        android:layout_marginRight="@dimen/_17sdp"
+        android:elevation="@dimen/_3sdp"
         android:background="@drawable/edittext_desc">
 
         <LinearLayout
@@ -62,10 +66,10 @@
 
         <ImageView
             android:id="@+id/image_store"
-            android:layout_width="135dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="55dp"
-            android:layout_marginLeft="15dp"
+            android:layout_width="@dimen/_113sdp"
+            android:layout_height="@dimen/_86sdp"
+            android:layout_marginTop="@dimen/_46sdp"
+            android:layout_marginLeft="@dimen/_13sdp"
             android:background="@drawable/sample_store_image2"/>
 
         <TextView

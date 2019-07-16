@@ -42,6 +42,7 @@ import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.wowls.boddari.R;
 import com.wowls.boddari.data.StoreInfo;
 import com.wowls.boddari.define.Define;
@@ -89,9 +90,11 @@ public class SearchActivity extends AppCompatActivity
     private Marker mPreSelectedMarker;
 
     private DrawerLayout mDrawerLayout;
+    private SlidingUpPanelLayout mSlideLayout;
     private MenuView mMenuView;
     private SlideView mSlideView;
 
+    private TextView mSearchTitle;
     private TextView mTextAddress;
     private EditText mEditKeyword;
     private ImageView mBtnMenu;
@@ -133,9 +136,12 @@ public class SearchActivity extends AppCompatActivity
         mMapView = (RemoveScrollNMapView) findViewById(R.id.mapView);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_container);
+        mSlideLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+
         mMenuView = new MenuView(this, findViewById(R.id.view_menu), mMenuItemClickListener);
         mSlideView = new SlideView(this, findViewById(R.id.view_slide), mSlideViewListener);
 
+        mSearchTitle = (TextView) findViewById(R.id.search_title);
         mTextAddress = (TextView) findViewById(R.id.text_address);
         mEditKeyword = (EditText) findViewById(R.id.edit_keyword);
         mBtnMenu = (ImageView) findViewById(R.id.btn_menu);
@@ -147,7 +153,9 @@ public class SearchActivity extends AppCompatActivity
         mListView = (RecyclerView) findViewById(R.id.search_list_view);
         mListView.setHasFixedSize(true);
 
+        initSlideLayout();
         initMap();
+
     }
 
     @Override
@@ -176,6 +184,34 @@ public class SearchActivity extends AppCompatActivity
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+    }
+
+    private void initSlideLayout()
+    {
+        mSlideLayout.getChildAt(1).setOnClickListener(null);
+        mSlideLayout.setFadeOnClickListener(v -> {
+            mSlideLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        });
+
+        mSlideLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener()
+        {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset)
+            {
+                mSlideView.updateSlideLayout(slideOffset);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState)
+            {
+                if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    mSearchViewPager.setVisibility(View.INVISIBLE);
+                } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED){
+                    mSearchViewPager.setVisibility(View.VISIBLE);
+                    moveNearestStore();
+                }
+            }
+        });
     }
 
     public void initMap()
@@ -357,8 +393,10 @@ public class SearchActivity extends AppCompatActivity
                         {
                             if(mStoreList.isEmpty())
                                 retryDialog("검색된 점포가 없습니다.");
-                            else
+                            else {
                                 moveNearestStore();
+                                mSlideLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                            }
                         }
                     }
                     catch (IOException e) {
@@ -466,11 +504,16 @@ public class SearchActivity extends AppCompatActivity
 
     private void addStoreMarker()
     {
-        if(!mMarkerList.isEmpty())
+        if(!mMarkerList.isEmpty()) {
+            for (Marker marker : mMarkerList) {
+                marker.setMap(null);
+            }
             mMarkerList.clear();
+        }
 
         for (StoreInfo info : mStoreList)
         {
+            Log.e("LOG", "========> info : " + info.getStoreName());
             double longitude = info.getLongitude();
             double latitude = info.getLatitude();
 
@@ -562,7 +605,7 @@ public class SearchActivity extends AppCompatActivity
         mNaverMap.moveCamera(CameraUpdate.toCameraPosition(new CameraPosition(position, DEFAULT_ZOOM_LEVEL)).animate(CameraAnimation.Fly, 500));
 
         mSearchViewPager.setCurrentItem(0);
-        mSearchViewPager.setVisibility(View.VISIBLE);
+//        mSearchViewPager.setVisibility(View.VISIBLE);
     }
 
     private MenuView.MenuItemClickListener mMenuItemClickListener = new MenuView.MenuItemClickListener()
@@ -591,19 +634,20 @@ public class SearchActivity extends AppCompatActivity
             switch (v.getId())
             {
                 case R.id.btn_menu:
-//                    mListView.setVisibility(mIsListMode ? View.VISIBLE : View.INVISIBLE);
-//
-//                    if(mIsListMode)
-//                        mBtnMenu.setBackgroundResource(R.drawable.ico_map);
-//                    else
-//                        mBtnMenu.setBackgroundResource(R.drawable.ico_menu);
-
                     View menu = findViewById(R.id.view_menu);
                     mDrawerLayout.openDrawer(menu);
                     break;
 
                 case R.id.btn_search:
-                    getStores(keywordParser(mEditKeyword.getText().toString()));
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mEditKeyword.getWindowToken(), 0);
+
+                    if(mSlideView.getTitle().equals(""))
+                        mSearchTitle.setText("모든 상점");
+                    else
+                        mSearchTitle.setText(mSlideView.getTitle());
+
+                    mSearchHandler.sendEmptyMessageDelayed(MSG_GET_STORES, DELAY_GET_STORES);
                     break;
             }
         }
@@ -717,8 +761,10 @@ public class SearchActivity extends AppCompatActivity
     public final static int MSG_SET_TRACKING_MODE = 1000;
     public final static int MSG_GET_LOCATION_DOT = MSG_SET_TRACKING_MODE + 1;
     public final static int MSG_SORT_STORE_LIST = MSG_GET_LOCATION_DOT + 1;
+    public final static int MSG_GET_STORES = MSG_SORT_STORE_LIST + 1;
 
     private final static int DELAY_SET_TRACKING_MODE = 5000;
+    private final static int DELAY_GET_STORES = 300;
 
     private SearchHandler mSearchHandler = new SearchHandler();
 
@@ -740,6 +786,10 @@ public class SearchActivity extends AppCompatActivity
 
                 case MSG_SORT_STORE_LIST:
                     sortStoreList();
+                    break;
+
+                case MSG_GET_STORES:
+                    getStores(keywordParser(mEditKeyword.getText().toString()));
                     break;
 
                 default:
